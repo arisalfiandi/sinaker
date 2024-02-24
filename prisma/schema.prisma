@@ -1,0 +1,302 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                        Int                         @id @default(autoincrement())
+  email                     String                      @unique
+  name                      String                      @db.VarChar(64)
+  nip                       String                      @unique @db.Char(18)
+  password                  String                      @db.VarChar(255)
+  role                      String                      @default("employee") @db.VarChar(64)
+  fungsi                    Int                         @db.Int
+  UserProject               UserProject[]
+  projectToLead             Project[]                   @relation("projectToLead")
+  taskToDo                  Task[]                      @relation("taskToDo")
+  ProjectCreated            Project[]
+  TaskOrganik               TaskOrganik[]
+  TimKerjaPegawai           TimKerjaPegawai[]
+  TimKerja                  TimKerja[]                  @relation("leadBy")
+  UserProject_member        UserProject_member[]
+  beban_kerja_pegawai       beban_kerja_pegawai[]
+  beban_kerja_tim_pegawai   beban_kerja_tim_pegawai[]
+}
+
+model Project {
+  id                        Int                         @id @default(autoincrement())
+  title                     String                      @db.VarChar(128)
+  rentangWaktu              String                      @db.VarChar(128)
+  fungsi                    Int                         @db.Int
+  startdate                 DateTime                    @db.Date
+  enddate                   DateTime                    @db.Date
+  description               String?                     @db.LongText
+  isArchived                Boolean                     @db.TinyInt()
+  projectLeader             User                        @relation("projectToLead", fields: [projectLeaderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  projectLeaderId           Int
+  UserProject               UserProject[]
+  UserProject_member        UserProject_member[]
+  Task                      Task[]
+  createdBy                 User                        @relation(fields: [createdById], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdById               Int
+}
+
+model UserProject {
+  id                        Int                         @id @default(autoincrement())
+  user                      User                        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId                    Int
+  project                   Project                     @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  projectId                 Int
+  isLeader                  Int
+}
+
+model UserProject_member {
+  id                        Int                         @id @default(autoincrement())
+  user                      User                        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId                    Int
+  project                   Project                     @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  projectId                 Int
+  isLeader                  Int
+}
+
+model Task {
+  id                        Int                         @id @default(autoincrement())
+  title                     String                      @db.VarChar(128)
+  jenisKeg                  Int                         @db.Int
+  duedate                   DateTime                    @db.Date
+  description               String?                     @db.LongText
+  notes                     String?                     @db.LongText
+  month                     Int                         @db.Int
+  jenisSample               Int                         @db.Int
+  year                      Int                         @db.Int
+  target                    Int                         @db.Int
+  realisasi                 Int                         @db.Int
+  unitTarget                String                      @db.VarChar(128)
+  project                   Project                     @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  projectId                 Int
+  user                      User                        @relation("taskToDo", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId                    Int
+  TaskPerusahaanProduksi    TaskPerusahaanProduksi[]
+  TaskPeserta               TaskPeserta[]
+  TaskOrganik               TaskOrganik[]
+  // nbs_nks                   nbs_nks[]
+  // nbs_idsls                 nbs_idsls[]
+  // nus_dinas                 nus_dinas[]
+}
+
+model Perusahaan {
+  id                        Int                         @id @default(autoincrement())
+  kip                       Int                         @db.Int
+  nama                      String                      @db.VarChar(128)
+  desa                      String                      @db.VarChar(128)
+  namaDesa                  String                      @db.VarChar(128)
+  kecamatan                 String                      @db.VarChar(128)
+  namaKec                   String                      @db.VarChar(128)
+  alamat                    String                      @db.VarChar(128)
+  kegiatan                  String                      @db.VarChar(128)
+  TaskPerusahaanProduksi    TaskPerusahaanProduksi[]
+  Perusahaangroup           PerusahaanGroup[]
+  
+
+}
+
+model GroupPerusahaan {
+  id                        Int                         @id @default(autoincrement())
+  nama                      String                      @db.VarChar(128)
+  fungsi                    Int                         @db.Int
+  Perusahaangroup           PerusahaanGroup[]
+}
+model PerusahaanGroup {
+  id                        Int                         @id @default(autoincrement())
+  perusahaan                Perusahaan                  @relation(fields: [perusahaanId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  perusahaanId              Int
+  groupPerusahaan           GroupPerusahaan             @relation(fields: [groupPerusahaanId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  groupPerusahaanId         Int
+}
+
+model TimKerja {
+  id                        Int                         @id @default(autoincrement())
+  nama                      String                      @db.VarChar(128)
+  fungsi                    Int                         @db.Int @default(0)
+  userId_fkey               User                        @relation("leadBy", fields: [ketuaTim], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ketuaTim                  Int                         @db.Int @default(0)
+  timKerjaPegawai           TimKerjaPegawai[]
+}
+model TimKerjaPegawai {
+  id                        Int                         @id @default(autoincrement())
+  userId_fkey               User                        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId                    Int
+  timKerja_fkey             TimKerja                    @relation(fields: [timKerjaId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  timKerjaId                Int
+}
+
+model TaskPerusahaanProduksi {
+ id                         Int                         @id @default(autoincrement())
+ task                       Task                        @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+ taskId                     Int
+ perusahaan                 Perusahaan                  @relation(fields: [perusahaanId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+ perusahaanId               Int
+ target                     Int                         @db.Int
+ pmlId                      Int                         @db.Int
+ pclId                      Int                         @db.Int
+ gajiPml                    Int                         @db.Int
+ gajiPcl                    Int                         @db.Int
+ realisasi                  Int                         @db.Int
+ desa                       String                      @db.VarChar(128)
+ namadesa                   String                      @db.VarChar(128)
+ kecamatan                  String                      @db.VarChar(128)
+ namaKec                    String                      @db.VarChar(128)
+ nama                       String                      @db.VarChar(128)
+ alamat                     String                      @db.VarChar(128)
+ hasilPencacahan            String                      @db.VarChar(128)
+ idSls                      String                      @db.VarChar(128)
+ nbs                        String                      @db.VarChar(128)
+ nks                        String                      @db.VarChar(128)
+ templateTable              String                      @db.VarChar(128)
+ idSbr                      String                      @db.VarChar(128)
+ nus                        String                      @db.VarChar(128)
+ duedate                    DateTime                    @db.Date
+ PesertaGaji                PesertaGaji[]
+//  nbs_nks                    nbs_nks[]
+//  nbs_idsls                  nbs_idsls[]
+//  nus_dinas                  nus_dinas[]
+}
+
+model Mitra {
+  id                        Int                         @id @default(autoincrement())
+  nik                       String                      @db.VarChar(128)
+  name                      String                      @db.VarChar(64)
+  jenisKelamin              String                      @db.VarChar(64)
+  tanggalLahir              DateTime                    @db.Date
+  umur                      Int                         @db.Int
+  pendidikan                String                      @db.VarChar(128)
+  email                     String                      @db.VarChar(128)
+  status                    String                      @default("internal") @db.VarChar(64)
+  TaskPeserta               TaskPeserta[]
+  PesertaGaji               PesertaGaji[]
+  beban_kerja_mitra         beban_kerja_mitra[]
+}
+
+model TaskPeserta {
+ id                         Int                         @id @default(autoincrement())
+ task                       Task                        @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+ taskId                     Int
+ mitra                      Mitra                       @relation(fields: [mitraId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+ mitraId                    Int
+}
+
+model TaskOrganik {
+ id                         Int                         @id @default(autoincrement())
+ task                       Task                        @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+ taskId                     Int
+ organik                    User                        @relation(fields: [organikId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+ organikId                  Int
+}
+
+model PesertaGaji {
+ id                          Int                        @id @default(autoincrement())
+ taskPerusahaanProduksi      TaskPerusahaanProduksi     @relation(fields: [TaskPerusahaanProduksiId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+ TaskPerusahaanProduksiId    Int
+ mitra                       Mitra                      @relation(fields: [mitraId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+ mitraId                     Int
+ gaji                        Int
+ dateGaji                    DateTime                   @db.Date
+} 
+
+model nbs_nks {
+ id                          Int                        @id @default(autoincrement())
+ desa                        String                     @db.VarChar(128)
+ namadesa                    String                     @db.VarChar(128)
+ kecamatan                   String                     @db.VarChar(128)
+ namaKec                     String                     @db.VarChar(128)
+ nbs                         Int                     
+ nks                         Int                     
+//  task                        Task                       @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//  taskId                      Int
+//  taskPerusahaanProduksi      TaskPerusahaanProduksi     @relation(fields: [TaskPerusahaanProduksiId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//  TaskPerusahaanProduksiId    Int
+} 
+
+model nbs_idsls {
+ id                          Int                        @id @default(autoincrement())
+ desa                        String                     @db.VarChar(128)
+ namadesa                    String                     @db.VarChar(128)
+ kecamatan                   String                     @db.VarChar(128)
+ namaKec                     String                     @db.VarChar(128)
+ nbs                         Int                     
+ id_sls                      Int                     
+//  task                        Task                       @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//  taskId                      Int
+//  taskPerusahaanProduksi      TaskPerusahaanProduksi     @relation(fields: [TaskPerusahaanProduksiId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//  TaskPerusahaanProduksiId    Int
+} 
+
+model nus_dinas {
+ id                          Int                        @id @default(autoincrement())
+ desa                        String                     @db.VarChar(128)
+ namadesa                    String                     @db.VarChar(128)
+ kecamatan                   String                     @db.VarChar(128)
+ namaKec                     String                     @db.VarChar(128)
+ nus                         Int                    
+ dinas                       String                     @db.VarChar(64)
+//  task                        Task                       @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//  taskId                      Int
+//  taskPerusahaanProduksi      TaskPerusahaanProduksi     @relation(fields: [TaskPerusahaanProduksiId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//  TaskPerusahaanProduksiId    Int
+} 
+
+model idsbr_perusahaan {
+ id                          Int                        @id @default(autoincrement())
+ desa                        String                     @db.VarChar(128)
+ namaDesa                    String                     @db.VarChar(128)
+ kecamatan                   String                     @db.VarChar(128)
+ namaKec                     String                     @db.VarChar(128)
+ idSbr                       String                     @db.VarChar(128)
+ perusahaan                  String                     @db.VarChar(64)
+//  task                        Task                       @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//  taskId                      Int
+//  taskPerusahaanProduksi      TaskPerusahaanProduksi     @relation(fields: [TaskPerusahaanProduksiId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//  TaskPerusahaanProduksiId    Int
+} 
+
+model beban_kerja_pegawai{
+  id                        Int                         @id @default(autoincrement())
+  userId_fkey               User                        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId                    Int
+  bebanKerja                Decimal
+}
+
+model beban_kerja_tim_pegawai{
+  id                        Int                         @id @default(autoincrement())
+  userId_fkey               User                        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId                    Int
+  bebanKerjaTim             Decimal
+}
+
+model beban_kerja_mitra{
+  id                        Int                         @id @default(autoincrement())
+  mitra                     Mitra                       @relation(fields: [mitraId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  mitraId                   Int
+  bebanKerja                Decimal
+}
+
+model kriteria_beban_kerja_pegawai{
+  id                        Int                         @id @default(autoincrement())
+  kriteria1                 Decimal
+  kriteria2                 Decimal
+}
+
+model kriteria_beban_kerja_mitra{
+  id                        Int                         @id @default(autoincrement())
+  kriteria1                 Decimal
+  kriteria2                 Decimal
+}
+
+
