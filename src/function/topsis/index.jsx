@@ -23,73 +23,8 @@ function sortedBy(elm) {
   }
 }
 
-const TableManageTaskList = () => {
-  return (
-    <>
-      <Grid item md={12} xs={11}>
-        test
-      </Grid>
-    </>
-  )
-}
 function getBest(m, w, ia) {
-  // ERROR HANDLERS
-
-  // if (!m.data) {
-  //   console.log('ERROR. Matrix argument MUST be a linear-algebra module matrix.')
-  //   return 'ERROR'
-  // }
-
-  // if (Array.isArray(ia) === false) {
-  //   console.log('ERROR. Impact argument MUST be an array.')
-  //   return 'ERROR'
-  // }
-
-  // if (ia.length !== m._size[1]) {
-  //   console.log('ERROR. Impact argument size MUST be equal to Alternative Matrix columns size.')
-  //   return 'ERROR'
-  // }
-
-  // if (ia.every(i => typeof i === 'string') === false) {
-  //   console.log('ERROR. Impact argument MUST contain string type elements.')
-  //   return 'ERROR'
-  // }
-
-  // const c1 = ia.indexOf('max') > -1
-  // const c2 = ia.indexOf('min') > -1
-
-  // if (!(c1 || c2)) {
-  //   console.log('ERROR. Impact argument MUST contain string type element exactly named "max" or "min" accordingly.')
-  //   return 'ERROR'
-  // }
-
-  // if (Array.isArray(w) === false) {
-  //   console.log('ERROR. Weights argument MUST be an array.')
-  //   return 'ERROR'
-  // }
-
-  // if (w.length !== m._size[1]) {
-  //   console.log('ERROR. Weights argument size MUST be equal to Alternative Matrix columns size.')
-  //   return 'ERROR'
-  // }
-
   let i = 0
-
-  // for (i = 0; i < m._size[1]; i += 1) {
-  //   if (w[i] > 1) {
-  //     console.log('ERROR. The value from an element in the weights argument cannot be higher than 1.')
-  //     return 'ERROR'
-  //   }
-  // }
-
-  // function add(a, b) {
-  //   return a + b
-  // }
-
-  // if (w.reduce(add, 0) > 1) {
-  //   console.log('ERROR. Elements from the weights argument must sum exactly 1.')
-  //   return 'ERROR'
-  // }
 
   // Hitung jumlah kuadrat masing-masing kolom
   const columnSumsSquared = []
@@ -113,7 +48,11 @@ function getBest(m, w, ia) {
   // Weighted normalised alternative matrix
   const wnm = nm.map(row => {
     return row.map((value, columnIndex) => {
-      return value * w[columnIndex]
+      if (columnSumsSquared[columnIndex] === 0) {
+        return 0
+      } else {
+        return value / columnSumsSquared[columnIndex]
+      }
     })
   })
 
@@ -182,4 +121,4 @@ function getBest(m, w, ia) {
   return rankedPerformanceScore
 } // TERMINA FUNCION
 
-export { getBest, TableManageTaskList }
+export { getBest }

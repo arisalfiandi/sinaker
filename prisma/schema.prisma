@@ -297,6 +297,7 @@ model kriteria_beban_kerja_mitra{
   id                        Int                         @id @default(autoincrement())
   kriteria1                 Decimal
   kriteria2                 Decimal
+  kriteria3                 Decimal
 }
 
 

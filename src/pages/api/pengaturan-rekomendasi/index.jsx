@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   }
 
   if (method === 'POST') {
-    const { kriteria1P, kriteria2P, kriteria1M, kriteria2M } = req.body
+    const { kriteria1P, kriteria2P, kriteria1M, kriteria2M, kriteria3M } = req.body
 
     try {
       const bebanPegawai = await prisma.kriteria_beban_kerja_pegawai.update({
@@ -32,7 +32,8 @@ export default async function handler(req, res) {
         where: { id: 1 },
         data: {
           kriteria1: kriteria1M,
-          kriteria2: kriteria2M
+          kriteria2: kriteria2M,
+          kriteria3: kriteria3M
         }
       })
 
