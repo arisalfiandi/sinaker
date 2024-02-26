@@ -55,7 +55,11 @@ const TaskManageAddViews = propss => {
     1: { color: 'success', status: 'Available' }
   }
 
-  const session = useSession()
+  const [session, setSession] = useState({
+    status: 'authenticated',
+    data: { uid: 1099999 }
+  })
+
   const [project, setProject] = useState(propss.data)
   const [organikProject_member, setOrganikProject_member] = useState(propss.dataOrganikProject_member)
   const [timkerja, setTimkerja] = useState(propss.dataTimKerja)

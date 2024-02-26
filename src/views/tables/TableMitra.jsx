@@ -52,7 +52,10 @@ const TableMitra = props => {
 
   const [mitra, setMitra] = useState(props.data)
   const [tpp, setTpp] = useState(props.dataTpp)
-  const session = useSession()
+  const [session, setSession] = useState({
+    status: 'authenticated',
+    data: { uid: 1099999 }
+  })
   // const rows = mitra.map(row => ({
   //   id: row.id,
   //   nik: row.nik.toString(),

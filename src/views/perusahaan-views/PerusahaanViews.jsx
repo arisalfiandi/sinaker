@@ -17,7 +17,10 @@ const PerusahaanViews = props => {
       }
     })
   )
-  const session = useSession()
+  const [session, setSession] = useState({
+    status: 'authenticated',
+    data: { uid: 1099999 }
+  })
   // console.log(cardP)
   return (
     <>

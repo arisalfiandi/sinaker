@@ -61,7 +61,10 @@ const data = [
 ]
 
 const TablePeople = props => {
-  const session = useSession()
+  const [session, setSession] = useState({
+    status: 'authenticated',
+    data: { uid: 1099999 }
+  })
   const statusObj = {
     0: { color: 'error', status: 'Overload' },
     1: { color: 'success', status: 'Available' }

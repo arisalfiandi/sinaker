@@ -32,7 +32,10 @@ const ProjectDetailsViews = props => {
   const [arridForpass, setArridForpass] = useState(props.dataUpm.map(dupm => dupm.userId))
   const [arrId, setArrId] = useState([])
   const [tampil, setTampil] = useState(false)
-  const session = useSession()
+  const [session, setSession] = useState({
+    status: 'authenticated',
+    data: { uid: 1099999 }
+  })
 
   console.log(session)
   useEffect(() => {

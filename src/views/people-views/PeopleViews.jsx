@@ -12,7 +12,10 @@ const PeopleViews = props => {
   const router = useRouter()
   const [cardP, setCardP] = useState(props.data)
   const [dataTpp, setdataTpp] = useState(props.dataTpp)
-  const session = useSession()
+  const [session, setSession] = useState({
+    status: 'authenticated',
+    data: { uid: 1099999 }
+  })
   console.log(session)
 
   return (

@@ -50,7 +50,10 @@ const TaskDetailViews = props => {
   const [mitra, setMitra] = useState(props.dataMitra)
   const [pegawai, setPegawai] = useState(props.dataPML)
   const [dataTask, setDataTasl] = useState(props.data)
-  const session = useSession()
+  const [session, setSession] = useState({
+    status: 'authenticated',
+    data: { uid: 1099999 }
+  })
   const [values, setValues] = useState({
     id: props.data.id,
     target: props.data.target,

@@ -16,16 +16,6 @@ const MitraEdit = ({ data }) => {
 export default MitraEdit
 
 export async function getServerSideProps(context) {
-  const token = await getToken({ req: context.req, secret: process.env.JWT_SECRET })
-
-  if (!token) {
-    return {
-      redirect: {
-        destination: '/pages/login',
-        permanent: false
-      }
-    }
-  }
   const mitras = await prisma.mitra.findUnique({
     where: {
       id: parseInt(context.params.id)

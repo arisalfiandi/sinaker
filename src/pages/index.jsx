@@ -36,7 +36,10 @@ import TabelTaskDashboard from 'src/views/tables/TableTaskDashboard'
 import TableTaskDashboard from 'src/views/tables/TableTaskDashboard'
 
 const Dashboard = ({ dataTask }) => {
-  const session = useSession()
+  const [session, setSession] = useState({
+    status: 'authenticated',
+    data: { uid: 1099999 }
+  })
   const [user, setUser] = useState({})
   const getUser = async () => {
     setUser(prev => {
@@ -634,17 +637,6 @@ const Dashboard = ({ dataTask }) => {
 }
 
 export async function getServerSideProps(context) {
-  const token = await getToken({ req: context.req, secret: process.env.JWT_SECRET })
-
-  if (!token) {
-    return {
-      redirect: {
-        destination: '/pages/login',
-        permanent: false
-      }
-    }
-  }
-
   let tasks
 
   tasks = await prisma.task.findMany({

@@ -15,16 +15,6 @@ const TaskManageEdit = ({ data }) => {
 }
 
 export async function getServerSideProps(context) {
-  const token = await getToken({ req: context.req, secret: process.env.JWT_SECRET })
-
-  if (!token) {
-    return {
-      redirect: {
-        destination: '/pages/login',
-        permanent: false
-      }
-    }
-  }
   const task = await prisma.task.findUnique({
     where: {
       id: parseInt(context.params.id)

@@ -12,16 +12,6 @@ const Timeline = ({ data }) => {
 }
 
 export async function getServerSideProps(context) {
-  const token = await getToken({ req: context.req, secret: process.env.JWT_SECRET })
-
-  if (!token) {
-    return {
-      redirect: {
-        destination: '/pages/login',
-        permanent: false
-      }
-    }
-  }
   let tasks
 
   tasks = await prisma.task.findMany({

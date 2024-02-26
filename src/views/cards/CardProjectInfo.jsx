@@ -214,7 +214,10 @@ const CardProjectDetail = props => {
   const [project, setProject] = useState(props.data)
   const [userProject, setUserProject] = useState(props.data.UserProject)
   const [arrId, setArrId] = useState(props.dataArrayIdProjectMember)
-  const session = useSession()
+  const [session, setSession] = useState({
+    status: 'authenticated',
+    data: { uid: 1099999 }
+  })
   const valueProgressBar =
     Math.ceil((new Date(project.enddate) - new Date()) / (1000 * 3600 * 24)) >= 0
       ? parseInt(

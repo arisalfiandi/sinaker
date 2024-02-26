@@ -36,7 +36,10 @@ const jenisFungsi = {
 }
 
 const TablePerusahaan = props => {
-  const session = useSession()
+  const [session, setSession] = useState({
+    status: 'authenticated',
+    data: { uid: 1099999 }
+  })
   const { dataUser } = props
   const rows = dataUser.map(row => ({
     id: row.id,

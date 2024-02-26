@@ -15,16 +15,6 @@ const ProjectEdit = ({ data }) => {
 }
 
 export async function getServerSideProps(context) {
-  const token = await getToken({ req: context.req, secret: process.env.JWT_SECRET })
-
-  if (!token) {
-    return {
-      redirect: {
-        destination: '/pages/login',
-        permanent: false
-      }
-    }
-  }
   const project = await prisma.project.findUnique({
     where: {
       id: Number(context.params.id)

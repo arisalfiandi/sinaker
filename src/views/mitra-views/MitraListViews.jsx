@@ -13,7 +13,10 @@ import TableMitra from 'src/views/tables/TableMitra'
 
 const MitraListViews = props => {
   const router = useRouter()
-  const session = useSession()
+  const [session, setSession] = useState({
+    status: 'authenticated',
+    data: { uid: 1099999 }
+  })
 
   const [mitra, setMitra] = useState(props.data)
   const [tpp, setTpp] = useState(props.dataTpp)

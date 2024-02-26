@@ -43,7 +43,10 @@ const UserDropdown = props => {
   const [user, setUser] = useState({})
   const [anchorEl, setAnchorEl] = useState('')
 
-  const session = useSession()
+  const [session, setSession] = useState({
+    status: 'authenticated',
+    data: { uid: 1099999 }
+  })
   // console.log(session)
 
   const getUser = async () => {
