@@ -273,11 +273,6 @@ const CreateKegiatanPerusahaanViews = props => {
             confirmButtonColor: '#68B92E',
             confirmButtonText: 'OK'
           }).then(router.push(`/`))
-
-          setValues({
-            kegNama: '',
-            kegKetua: 0
-          })
         }
 
         break
