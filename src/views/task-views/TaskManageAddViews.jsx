@@ -1866,7 +1866,7 @@ const TaskManageAddViews = propss => {
                               sorting: {
                                 sortModel: [
                                   {
-                                    field: 'bebanKerja',
+                                    field: 'bebanKerjaM',
                                     sort: 'asc'
                                   }
                                 ]
@@ -1925,7 +1925,7 @@ const TaskManageAddViews = propss => {
                               sorting: {
                                 sortModel: [
                                   {
-                                    field: 'bebanKerja',
+                                    field: 'bebanKerjaO',
                                     sort: 'asc'
                                   }
                                 ]
