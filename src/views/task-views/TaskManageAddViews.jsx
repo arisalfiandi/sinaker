@@ -88,7 +88,8 @@ const TaskManageAddViews = propss => {
 
   const kriteria1M = parseFloat(bobotMitra.kriteria1)
   const kriteria2M = parseFloat(bobotMitra.kriteria2)
-  const arrayBebanMitra = [kriteria1M, kriteria2M]
+  const kriteria3M = parseFloat(bobotMitra.kriteria3)
+  const arrayBebanMitra = [kriteria1M, kriteria2M, kriteria3M]
 
   const kriteria1P = parseFloat(bobotPegawai.kriteria1)
   const kriteria2P = parseFloat(bobotPegawai.kriteria2)
@@ -340,11 +341,15 @@ const TaskManageAddViews = propss => {
 
       return {
         jumlahKegiatan,
-        gajiBulanIni
+        gajiBulanIni,
+        gajiBulanSblm
       }
     })
 
     const arrayMitra = mitraAll.map(item => [item.jumlahKegiatan, item.gajiBulanIni])
+
+    // console.log(arrayMitra)
+    // console.log(arrayUser)
 
     try {
       while (true) {
@@ -506,6 +511,7 @@ const TaskManageAddViews = propss => {
             fungsi: hasilFilter.fungsi,
             role: hasilFilter.role,
             nip: hasilFilter.nip,
+            task_organik: hasilFilter.TaskOrganik,
             password: hasilFilter.password,
             beban_kerja_pegawai: hasilFilter.beban_kerja_pegawai,
             checked: true
@@ -515,8 +521,8 @@ const TaskManageAddViews = propss => {
       })
       .filter(obj => obj !== null) // Menghapus nilai null dari array
   )
-  console.log(propss.dataOrganik)
-  console.log(propss.dataOrganikProject_member)
+  // console.log(propss.dataOrganik)
+  // console.log(propss.dataOrganikProject_member)
   // console.log(organikProject_member)
 
   // const [anggotaTim, setAnggotaTim] = useState(0)
@@ -696,21 +702,18 @@ const TaskManageAddViews = propss => {
 
       const bebanKerja = row.beban_kerja_pegawai[0].bebanKerja
       const nilaiBebanKerja = number(bebanKerja).toFixed(2)
+      // console.log(row)
 
       return {
         id: row.id,
         nip: row.nip.toString(),
         name: row.name,
-        gajiBulanIni,
-        gajiBulanSblm,
-        gajiBulanDepan,
+        jumlahKegiatan: row.task_organik.length,
         bebanKerjaO: nilaiBebanKerja,
-        over: gajiBulanIni
+        over: row.task_organik.length
       }
     })
   )
-
-  // console.log(rowsO)
 
   useEffect(() => {
     // Saat participants berubah, periksa dan ubah status checked jika cocok
@@ -964,27 +967,27 @@ const TaskManageAddViews = propss => {
         </>
       )
     },
-    {
-      field: 'gajiBulanDepan',
-      renderHeader: () => (
-        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
-          Gaji Bulan Depan
-        </Typography>
-      ),
-      headerName: 'Gaji Bulan Depan ',
-      type: 'string',
-      width: 140,
-      renderCell: params => (
-        <>
-          <Typography
-            color={params.row.gajiBulanDepan < 3000000 ? 'secondary.main' : 'error.main'}
-            sx={{ fontWeight: 500, fontSize: '0.875rem !important', textAlign: 'center' }}
-          >
-            {`Rp ${params.row.gajiBulanDepan.toLocaleString('id-ID')}`}
-          </Typography>
-        </>
-      )
-    },
+    // {
+    //   field: 'gajiBulanDepan',
+    //   renderHeader: () => (
+    //     <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
+    //       Gaji Bulan Depan
+    //     </Typography>
+    //   ),
+    //   headerName: 'Gaji Bulan Depan ',
+    //   type: 'string',
+    //   width: 140,
+    //   renderCell: params => (
+    //     <>
+    //       <Typography
+    //         color={params.row.gajiBulanDepan < 3000000 ? 'secondary.main' : 'error.main'}
+    //         sx={{ fontWeight: 500, fontSize: '0.875rem !important', textAlign: 'center' }}
+    //       >
+    //         {`Rp ${params.row.gajiBulanDepan.toLocaleString('id-ID')}`}
+    //       </Typography>
+    //     </>
+    //   )
+    // },
     {
       field: 'bebanKerjaM',
       headerName: 'Beban Kerja',
@@ -1070,8 +1073,8 @@ const TaskManageAddViews = propss => {
       renderCell: params => (
         <>
           <Chip
-            label={statusObj[params.row.gajiBulanIni < 3000000 ? 1 : 0].status}
-            color={statusObj[params.row.gajiBulanIni < 3000000 ? 1 : 0].color}
+            label={statusObj[params.row.jumlahKegiatan < 15 ? 1 : 0].status}
+            color={statusObj[params.row.jumlahKegiatan < 15 ? 1 : 0].color}
             sx={{
               height: 24,
               fontSize: '0.75rem',
@@ -1091,68 +1094,79 @@ const TaskManageAddViews = propss => {
       width: 140
     },
 
+    // {
+    //   field: 'gajiBulanIni',
+    //   renderHeader: () => (
+    //     <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
+    //       Gaji Bulan Ini
+    //     </Typography>
+    //   ),
+    //   headerName: 'Gaji Bulan Ini ',
+    //   type: 'string',
+    //   width: 140,
+    //   renderCell: params => (
+    //     <>
+    //       <Typography
+    //         color={params.row.gajiBulanIni < 3000000 ? 'secondary.main' : 'error.main'}
+    //         sx={{ fontWeight: 500, fontSize: '0.875rem !important', textAlign: 'center' }}
+    //       >
+    //         {`Rp ${params.row.gajiBulanIni.toLocaleString('id-ID')}`}
+    //       </Typography>
+    //     </>
+    //   )
+    // },
+    // {
+    //   field: 'gajiBulanSblm',
+    //   renderHeader: () => (
+    //     <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
+    //       Gaji Bulan Sebelumnya
+    //     </Typography>
+    //   ),
+    //   headerName: 'Gaji Bulan Sebelumnya ',
+    //   type: 'string',
+    //   width: 140,
+    //   renderCell: params => (
+    //     <>
+    //       <Typography
+    //         color={params.row.gajiBulanSblm < 3000000 ? 'secondary.main' : 'error.main'}
+    //         sx={{ fontWeight: 500, fontSize: '0.875rem !important', textAlign: 'center' }}
+    //       >
+    //         {`Rp ${params.row.gajiBulanSblm.toLocaleString('id-ID')}`}
+    //       </Typography>
+    //     </>
+    //   )
+    // },
+    // {
+    //   field: 'gajiBulanDepan',
+    //   renderHeader: () => (
+    //     <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
+    //       Gaji Bulan Depan
+    //     </Typography>
+    //   ),
+    //   headerName: 'Gaji Bulan Depan ',
+    //   type: 'string',
+    //   width: 140,
+    //   renderCell: params => (
+    //     <>
+    //       <Typography
+    //         color={params.row.gajiBulanDepan < 3000000 ? 'secondary.main' : 'error.main'}
+    //         sx={{ fontWeight: 500, fontSize: '0.875rem !important', textAlign: 'center' }}
+    //       >
+    //         {`Rp ${params.row.gajiBulanDepan.toLocaleString('id-ID')}`}
+    //       </Typography>
+    //     </>
+    //   )
+    // },
     {
-      field: 'gajiBulanIni',
+      field: 'jumlahKegiatan',
+      headerName: 'Beban Kerja',
       renderHeader: () => (
         <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
-          Gaji Bulan Ini
+          Jumlah Pekerjaan
         </Typography>
       ),
-      headerName: 'Gaji Bulan Ini ',
-      type: 'string',
-      width: 140,
-      renderCell: params => (
-        <>
-          <Typography
-            color={params.row.gajiBulanIni < 3000000 ? 'secondary.main' : 'error.main'}
-            sx={{ fontWeight: 500, fontSize: '0.875rem !important', textAlign: 'center' }}
-          >
-            {`Rp ${params.row.gajiBulanIni.toLocaleString('id-ID')}`}
-          </Typography>
-        </>
-      )
-    },
-    {
-      field: 'gajiBulanSblm',
-      renderHeader: () => (
-        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
-          Gaji Bulan Sebelumnya
-        </Typography>
-      ),
-      headerName: 'Gaji Bulan Sebelumnya ',
-      type: 'string',
-      width: 140,
-      renderCell: params => (
-        <>
-          <Typography
-            color={params.row.gajiBulanSblm < 3000000 ? 'secondary.main' : 'error.main'}
-            sx={{ fontWeight: 500, fontSize: '0.875rem !important', textAlign: 'center' }}
-          >
-            {`Rp ${params.row.gajiBulanSblm.toLocaleString('id-ID')}`}
-          </Typography>
-        </>
-      )
-    },
-    {
-      field: 'gajiBulanDepan',
-      renderHeader: () => (
-        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
-          Gaji Bulan Depan
-        </Typography>
-      ),
-      headerName: 'Gaji Bulan Depan ',
-      type: 'string',
-      width: 140,
-      renderCell: params => (
-        <>
-          <Typography
-            color={params.row.gajiBulanDepan < 3000000 ? 'secondary.main' : 'error.main'}
-            sx={{ fontWeight: 500, fontSize: '0.875rem !important', textAlign: 'center' }}
-          >
-            {`Rp ${params.row.gajiBulanDepan.toLocaleString('id-ID')}`}
-          </Typography>
-        </>
-      )
+
+      minWidth: 150
     },
     {
       field: 'bebanKerjaO',
