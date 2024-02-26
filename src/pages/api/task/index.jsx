@@ -224,47 +224,47 @@ export default async function handler(req, res) {
         })
       }
 
-      // topsis
-      const config = {}
-      const math = create(all, config)
+      // // topsis
+      // const config = {}
+      // const math = create(all, config)
 
-      // pegawai
-      let m = math.matrix(arrayUser)
-      let w = arrayBebanPegawai
-      let ia = ['min', 'min']
-      let result = getBest(m, w, ia)
+      // // pegawai
+      // let m = math.matrix(arrayUser)
+      // let w = arrayBebanPegawai
+      // let ia = ['min', 'min']
+      // let result = getBest(m, w, ia)
 
-      console.log(result)
-      result.map(async peserta => {
-        // console.log(peserta.id)
-        const beban_pegawai = await prisma.beban_kerja_pegawai.update({
-          where: {
-            id: peserta.index + 1
-          },
-          data: {
-            bebanKerja: 1 - peserta.ps
-          }
-        })
-      })
+      // console.log(result)
+      // result.map(async peserta => {
+      //   // console.log(peserta.id)
+      //   const beban_pegawai = await prisma.beban_kerja_pegawai.update({
+      //     where: {
+      //       id: peserta.index + 1
+      //     },
+      //     data: {
+      //       bebanKerja: 1 - peserta.ps
+      //     }
+      //   })
+      // })
 
-      // mitra
-      let mm = math.matrix(arrayMitra)
-      let wm = arrayBebanMitra
-      let iam = ['min', 'min']
-      let resultm = getBest(mm, wm, iam)
+      // // mitra
+      // let mm = math.matrix(arrayMitra)
+      // let wm = arrayBebanMitra
+      // let iam = ['min', 'min']
+      // let resultm = getBest(mm, wm, iam)
 
-      console.log(resultm)
-      resultm.map(async mitra => {
-        // console.log(mitra.id)
-        const beban_pegawai = await prisma.beban_kerja_mitra.update({
-          where: {
-            id: mitra.index + 1
-          },
-          data: {
-            bebanKerja: 1 - mitra.ps
-          }
-        })
-      })
+      // console.log(resultm)
+      // resultm.map(async mitra => {
+      //   // console.log(mitra.id)
+      //   const beban_pegawai = await prisma.beban_kerja_mitra.update({
+      //     where: {
+      //       id: mitra.index + 1
+      //     },
+      //     data: {
+      //       bebanKerja: 1 - mitra.ps
+      //     }
+      //   })
+      // })
 
       return res.status(201).json({ success: true })
     } catch (error) {
