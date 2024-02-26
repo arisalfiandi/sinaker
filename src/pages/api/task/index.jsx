@@ -39,6 +39,8 @@ export default async function handler(req, res) {
       gaji,
       arrayUser,
       arrayMitra,
+      arrayUserId,
+      arrayMitraId,
       arrayBebanPegawai,
       arrayBebanMitra,
       templateTable,
@@ -75,36 +77,38 @@ export default async function handler(req, res) {
         })
         if (jenisSample === 1) {
           if (jenisKeg == 65 || jenisKeg == 67) {
+            console.log('disini buat 65/pencacahan')
+
+            console.log(participants)
             // ini misal sample perusahaam
             participants.map(async participant => {
-              if (participant.checked) {
-                const tpp = await prisma.TaskPerusahaanProduksi.create({
-                  data: {
-                    taskId: task.id,
-                    perusahaanId: participant.id,
-                    nama: templateTable == 5 || templateTable == 6 || templateTable == 7 ? participant.nama : '',
-                    desa: participant.desa,
-                    namadesa: participant.namaDesa,
-                    kecamatan: participant.kecamatan,
-                    namaKec: participant.namaKec,
-                    alamat: templateTable == 5 ? participant.alamat : '',
-                    target: 0,
-                    realisasi: 0,
-                    hasilPencacahan: '',
-                    duedate: participant.tanggal,
-                    pmlId: 0,
-                    pclId: 0,
-                    gajiPml: gaji,
-                    gajiPcl: gaji,
-                    idSls: '',
-                    nbs: '',
-                    nks: '',
-                    nus: templateTable == 6 ? participant.nus : '',
-                    idSbr: templateTable == 7 ? participant.idSbr : '',
-                    templateTable: templateTable.toString()
-                  }
-                })
-              }
+              const tpp = await prisma.TaskPerusahaanProduksi.create({
+                data: {
+                  taskId: task.id,
+                  perusahaanId: 9999999,
+                  nama:
+                    templateTable == 5 || templateTable == 6 || templateTable == 7 ? participant.namaPerusahaan : '',
+                  desa: participant.kodeDesa.toString(),
+                  namadesa: participant.namaDesa,
+                  kecamatan: participant.kodeKecamatan.toString(),
+                  namaKec: participant.namaKecamatan,
+                  alamat: templateTable == 5 ? participant.alamat : '',
+                  target: 0,
+                  realisasi: 0,
+                  hasilPencacahan: '',
+                  duedate: new Date(),
+                  pmlId: 0,
+                  pclId: 0,
+                  gajiPml: gaji,
+                  gajiPcl: gaji,
+                  idSls: '',
+                  nbs: '',
+                  nks: '',
+                  nus: templateTable == 6 ? participant.nus : '',
+                  idSbr: templateTable == 7 ? participant.idSbr : '',
+                  templateTable: templateTable.toString()
+                }
+              })
             })
 
             // buat add peserta disini
@@ -131,6 +135,8 @@ export default async function handler(req, res) {
         } else if (jenisSample == 0) {
           // ini misal sample non perusahaam
           if (jenisKeg == 65 || jenisKeg == 67) {
+            console.log('disini buat 65 67/pngolahan input /pencacahan dan Non perusahaan')
+            console.log(participants)
             participants.map(async participant => {
               const tnp = await prisma.TaskPerusahaanProduksi.create({
                 data: {
@@ -232,38 +238,59 @@ export default async function handler(req, res) {
       let m = math.matrix(arrayUser)
       let w = arrayBebanPegawai
       let ia = ['min', 'min']
-      let result = getBest(m, w, ia)
+      let id = arrayUserId
+      let result = getBest(m, w, ia, id)
 
-      console.log(result)
-      result.map(async peserta => {
-        // console.log(peserta.id)
-        const beban_pegawai = await prisma.beban_kerja_pegawai.update({
-          where: {
-            id: peserta.index + 1
-          },
-          data: {
-            bebanKerja: 1 - peserta.ps
-          }
-        })
+      // console.log(result)
+      // result.map(async peserta => {
+      //   // console.log(peserta.id)
+      //   const beban_pegawai = await prisma.beban_kerja_pegawai.update({
+      //     where: {
+      //       id: peserta.index + 1
+      //     },
+      //     data: {
+      //       bebanKerja: 1 - peserta.ps
+      //     }
+      //   })
+      // })
+
+      const deleteBebanPegawai = await prisma.beban_kerja_pegawai.deleteMany({})
+
+      const resultBaru = result.map(item => {
+        return { id: item.index, userId: item.petugasId, bebanKerja: item.ps }
+      })
+      // console.log(resultBaru)
+      const createMany = await prisma.beban_kerja_pegawai.createMany({
+        data: resultBaru
       })
 
       // mitra
       let mm = math.matrix(arrayMitra)
       let wm = arrayBebanMitra
-      let iam = ['min', 'min']
-      let resultm = getBest(mm, wm, iam)
+      let iam = ['min', 'min', 'min']
+      let idm = arrayMitraId
+      let resultm = getBest(mm, wm, iam, idm)
 
-      console.log(resultm)
-      resultm.map(async mitra => {
-        // console.log(mitra.id)
-        const beban_pegawai = await prisma.beban_kerja_mitra.update({
-          where: {
-            id: mitra.index + 1
-          },
-          data: {
-            bebanKerja: 1 - mitra.ps
-          }
-        })
+      // console.log(resultm)
+      // resultm.map(async mitra => {
+      //   // console.log(mitra.id)
+      //   const beban_mitra = await prisma.beban_kerja_mitra.update({
+      //     where: {
+      //       id: mitra.index + 1
+      //     },
+      //     data: {
+      //       bebanKerja: 1 - mitra.ps
+      //     }
+      //   })
+      // })
+
+      const deleteBebanMitra = await prisma.beban_kerja_mitra.deleteMany({})
+      const resultmBaru = resultm.map(item => {
+        return { id: item.index, mitraId: item.petugasId, bebanKerja: item.ps }
+      })
+      // console.log(resultmBaru)
+      const createMMany = await prisma.beban_kerja_mitra.createMany({
+        data: resultmBaru
       })
 
       return res.status(201).json({ success: true })

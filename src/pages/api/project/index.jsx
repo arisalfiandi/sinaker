@@ -51,7 +51,7 @@ export default async function handler(req, res) {
             startdate: bulan.firstDate,
             enddate: bulan.lastDate,
             description,
-            isArchived: false,
+            isArchived: 1,
             projectLeaderId,
             fungsi,
             rentangWaktu,

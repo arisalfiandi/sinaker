@@ -102,7 +102,6 @@ const TaskManageAddViews = propss => {
     })
     setParticipants(dataGroup)
   }, [values])
-  // console.log(participants)
 
   useEffect(() => {
     let dataTimkerja = []
@@ -177,7 +176,7 @@ const TaskManageAddViews = propss => {
   //           checked: false
   //         }))
   //       })
-  //     : console.log('a')
+  //     :
   // }, [values])
 
   // intinya disini pas mau add ke db, value-value
@@ -193,7 +192,6 @@ const TaskManageAddViews = propss => {
     let pegawaiOrganik = []
     rowsO.map(a => {
       if (a.checked) {
-        // console.log('')
         pegawaiOrganik.push(a)
       }
     })
@@ -245,12 +243,14 @@ const TaskManageAddViews = propss => {
       })
 
       return {
+        pegawai_id: row.id,
         jumlahKegiatan,
         gajiBulanIni
       }
     })
 
     const arrayUser = userAll.map(item => [item.jumlahKegiatan, item.gajiBulanIni])
+    const arrayUserId = userAll.map(item => item.pegawai_id)
 
     const mitraAll = dataMitra.map(row => {
       const gajiBulanIniPCL = tpp
@@ -340,16 +340,15 @@ const TaskManageAddViews = propss => {
       })
 
       return {
+        mitra_id: row.id,
         jumlahKegiatan,
         gajiBulanIni,
         gajiBulanSblm
       }
     })
 
-    const arrayMitra = mitraAll.map(item => [item.jumlahKegiatan, item.gajiBulanIni])
-
-    // console.log(arrayMitra)
-    // console.log(arrayUser)
+    const arrayMitra = mitraAll.map(item => [item.jumlahKegiatan, item.gajiBulanIni, item.gajiBulanSblm])
+    const arrayMitraId = mitraAll.map(item => item.mitra_id)
 
     try {
       while (true) {
@@ -362,11 +361,13 @@ const TaskManageAddViews = propss => {
           duedate: values.subKegDl,
           bulan: new Date(values.subKegDl).getMonth(),
           jenisSample: values.subKegJenis == 65 || values.subKegJenis == 67 ? values.subKegJenisSample : 0,
-          participants: values.subKegJenisSample === 1 ? rows : data,
+          participants: data,
           fungsi: fungsi,
           peserta: dataPCL,
           arrayUser: arrayUser,
           arrayMitra: arrayMitra,
+          arrayUserId: arrayUserId,
+          arrayMitraId: arrayMitraId,
           arrayBebanPegawai: arrayBebanPegawai,
           arrayBebanMitra: arrayBebanMitra,
           persertaOrganik: pegawaiOrganik,
@@ -521,9 +522,6 @@ const TaskManageAddViews = propss => {
       })
       .filter(obj => obj !== null) // Menghapus nilai null dari array
   )
-  // console.log(propss.dataOrganik)
-  // console.log(propss.dataOrganikProject_member)
-  // console.log(organikProject_member)
 
   // const [anggotaTim, setAnggotaTim] = useState(0)
   // useEffect(() => {
@@ -541,7 +539,7 @@ const TaskManageAddViews = propss => {
   //   setAnggotaTim(objekYangSama)
   // }, [])
 
-  // console.log(anggotaTim)
+  //
 
   // const rows = company.map(perusahaan => ({
   //   id: perusahaan.id,
@@ -654,6 +652,7 @@ const TaskManageAddViews = propss => {
         id: row.id,
         nik: row.nik.toString(),
         name: row.name,
+        jumlahKegiatanM: row.TaskPeserta.length,
         gajiBulanIni,
         gajiBulanSblm,
         gajiBulanDepan,
@@ -702,7 +701,6 @@ const TaskManageAddViews = propss => {
 
       const bebanKerja = row.beban_kerja_pegawai[0].bebanKerja
       const nilaiBebanKerja = number(bebanKerja).toFixed(2)
-      // console.log(row)
 
       return {
         id: row.id,
@@ -904,8 +902,8 @@ const TaskManageAddViews = propss => {
       renderCell: params => (
         <>
           <Chip
-            label={statusObj[params.row.gajiBulanIni < 3000000 ? 1 : 0].status}
-            color={statusObj[params.row.gajiBulanIni < 3000000 ? 1 : 0].color}
+            label={statusObj[params.row.bebanKerjaM < 0.7 ? (params.row.gajiBulanIni < 3000000 ? 1 : 0) : 0].status}
+            color={statusObj[params.row.bebanKerjaM < 0.7 ? (params.row.gajiBulanIni < 3000000 ? 1 : 0) : 0].color}
             sx={{
               height: 24,
               fontSize: '0.75rem',
@@ -923,6 +921,17 @@ const TaskManageAddViews = propss => {
       ),
       type: 'string',
       width: 140
+    },
+    {
+      field: 'jumlahKegiatanM',
+      headerName: 'Beban Kerja',
+      renderHeader: () => (
+        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
+          Jumlah Pekerjaan
+        </Typography>
+      ),
+
+      minWidth: 150
     },
 
     {
@@ -1429,7 +1438,7 @@ const TaskManageAddViews = propss => {
       const workSheet = workBook.Sheets[workSheetName]
       //convert to array
       const fileData = XLSX.utils.sheet_to_json(workSheet, { header: 1 })
-      // console.log(fileData)
+
       const headers = fileData[0]
       const heads = headers.map(head => ({ title: head, field: head }))
       setColDefs(heads)
@@ -1730,7 +1739,7 @@ const TaskManageAddViews = propss => {
                 <>
                   <Grid item md={6} xs={12}>
                     <Typography variant={'h6'} mb={4}>
-                      Sample Non Perusahaan
+                      Import Sample
                     </Typography>
                   </Grid>
                   <Grid mt={2} mb={2} xs={12} md={12} style={{ paddingLeft: 18 }}>

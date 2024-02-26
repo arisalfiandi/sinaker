@@ -23,7 +23,7 @@ function sortedBy(elm) {
   }
 }
 
-function getBest(m, w, ia) {
+function getBest(m, w, ia, id) {
   let i = 0
 
   // Hitung jumlah kuadrat masing-masing kolom
@@ -41,13 +41,6 @@ function getBest(m, w, ia) {
   // Normalisasi matriks
   const nm = m._data.map(row => {
     return row.map((value, columnIndex) => {
-      return value / columnSumsSquared[columnIndex]
-    })
-  })
-
-  // Weighted normalised alternative matrix
-  const wnm = nm.map(row => {
-    return row.map((value, columnIndex) => {
       if (columnSumsSquared[columnIndex] === 0) {
         return 0
       } else {
@@ -55,6 +48,17 @@ function getBest(m, w, ia) {
       }
     })
   })
+
+  // console.log(nm)
+
+  // Weighted normalised alternative matrix
+  const wnm = nm.map(row => {
+    return row.map((value, columnIndex) => {
+      return value * w[columnIndex]
+    })
+  })
+
+  // console.log(wnm)
 
   // Computing ideal and anti-ideal solution
   const numberOfColumns = m._size[1]
@@ -78,6 +82,9 @@ function getBest(m, w, ia) {
     }
   }
 
+  // console.log(idealSolutions)
+  // console.log(aidealSolutions)
+
   // Calculate distance to ideal and antiideal solution
   const idistances = []
   const aidistances = []
@@ -95,6 +102,9 @@ function getBest(m, w, ia) {
     aidistances.push(aidistance)
   }
 
+  // console.log(idistances)
+  // console.log(aidistances)
+
   // calculate preference values
   const proximityScores = []
 
@@ -106,17 +116,21 @@ function getBest(m, w, ia) {
     proximityScores.push(proximityScore)
   }
 
+  // console.log(proximityScores)
+
   const indexedPerformanceScore = []
-  i = 0
-  for (i = 0; i < m._size[0]; i += 1) {
+  for (i = 1; i <= m._size[0]; i += 1) {
     const dp = {
       index: i,
-      ps: proximityScores[i]
+      petugasId: id[i - 1],
+      ps: 1 - proximityScores[i - 1]
     }
     indexedPerformanceScore.push(dp)
   }
 
   const rankedPerformanceScore = indexedPerformanceScore.sort(sortedBy('index'))
+
+  // console.log(rankedPerformanceScore)
 
   return rankedPerformanceScore
 } // TERMINA FUNCION
