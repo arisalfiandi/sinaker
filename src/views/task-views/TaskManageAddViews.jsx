@@ -76,7 +76,7 @@ const TaskManageAddViews = propss => {
     subKegJenis: 65,
     subKegTarget: 0,
     subKegUnitTarget: '',
-    subKegJenisSample: '',
+    subKegJenisSample: 1,
     subKegSamplePerusahaan: '',
     subKegSampleTimKerja: '',
     subKegDl: '',
