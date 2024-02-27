@@ -1,14 +1,14 @@
 // view
-import CreateBobotKriteria from 'src/views/pengaturan-rekomendasi-views/CreateBobotKriteria'
+import EditBobotKriteria from 'src/views/pengaturan-rekomendasi-views/EditBobotKriteria'
 import { useState, useEffect } from 'react'
-import prisma from '../../services/db'
+import prisma from '../../../services/db'
 import { getToken } from 'next-auth/jwt'
 
 const CreateKegiatanPerusahaan = ({ data }) => {
   const [beban, setUser] = useState(JSON.parse(data))
   return (
     <>
-      <CreateBobotKriteria dataPegawai={beban.kriteriaPegawai} dataMitra={beban.kriteriaMitra}></CreateBobotKriteria>
+      <EditBobotKriteria dataPegawai={beban.kriteriaPegawai} dataMitra={beban.kriteriaMitra}></EditBobotKriteria>
     </>
   )
 }
