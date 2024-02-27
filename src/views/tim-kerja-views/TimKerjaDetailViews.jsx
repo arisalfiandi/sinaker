@@ -110,9 +110,9 @@ const CreateKegiatanPerusahaanViews = props => {
       nama: row.userId_fkey.name,
       fungsi: row.userId_fkey.fungsi,
       jumlahKegiatan: row.userId_fkey.UserProject.length,
-      gajiBulanIni,
-      gajiBulanSblm,
-      gajiBulanDepan,
+      // gajiBulanIni,
+      // gajiBulanSblm,
+      // gajiBulanDepan,
       bebanKerjaO: nilaiBebanKerja,
       over: gajiBulanIni
       // checked: row.checked
@@ -195,8 +195,8 @@ const CreateKegiatanPerusahaanViews = props => {
       renderCell: params => (
         <>
           <Chip
-            label={statusObj[params.row.gajiBulanIni < 3000000 ? 1 : 0].status}
-            color={statusObj[params.row.gajiBulanIni < 3000000 ? 1 : 0].color}
+            label={statusObj[params.row.jumlahKegiatan < 15 ? 1 : 0].status}
+            color={statusObj[params.row.jumlahKegiatan < 15 ? 1 : 0].color}
             sx={{
               height: 24,
               fontSize: '0.75rem',
@@ -216,69 +216,69 @@ const CreateKegiatanPerusahaanViews = props => {
       width: 140
     },
 
-    {
-      field: 'gajiBulanIni',
-      renderHeader: () => (
-        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
-          Gaji Bulan Ini
-        </Typography>
-      ),
-      headerName: 'Gaji Bulan Ini ',
-      type: 'string',
-      width: 140,
-      renderCell: params => (
-        <>
-          <Typography
-            color={params.row.gajiBulanIni < 3000000 ? 'secondary.main' : 'error.main'}
-            sx={{ fontWeight: 500, fontSize: '0.875rem !important', textAlign: 'center' }}
-          >
-            {`Rp ${params.row.gajiBulanIni.toLocaleString('id-ID')}`}
-          </Typography>
-        </>
-      )
-    },
-    {
-      field: 'gajiBulanSblm',
-      renderHeader: () => (
-        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
-          Gaji Bulan Sebelumnya
-        </Typography>
-      ),
-      headerName: 'Gaji Bulan Sebelumnya ',
-      type: 'string',
-      width: 140,
-      renderCell: params => (
-        <>
-          <Typography
-            color={params.row.gajiBulanSblm < 3000000 ? 'secondary.main' : 'error.main'}
-            sx={{ fontWeight: 500, fontSize: '0.875rem !important', textAlign: 'center' }}
-          >
-            {`Rp ${params.row.gajiBulanSblm.toLocaleString('id-ID')}`}
-          </Typography>
-        </>
-      )
-    },
-    {
-      field: 'gajiBulanDepan',
-      renderHeader: () => (
-        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
-          Gaji Bulan Depan
-        </Typography>
-      ),
-      headerName: 'Gaji Bulan Depan ',
-      type: 'string',
-      width: 140,
-      renderCell: params => (
-        <>
-          <Typography
-            color={params.row.gajiBulanDepan < 3000000 ? 'secondary.main' : 'error.main'}
-            sx={{ fontWeight: 500, fontSize: '0.875rem !important', textAlign: 'center' }}
-          >
-            {`Rp ${params.row.gajiBulanDepan.toLocaleString('id-ID')}`}
-          </Typography>
-        </>
-      )
-    },
+    // {
+    //   field: 'gajiBulanIni',
+    //   renderHeader: () => (
+    //     <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
+    //       Gaji Bulan Ini
+    //     </Typography>
+    //   ),
+    //   headerName: 'Gaji Bulan Ini ',
+    //   type: 'string',
+    //   width: 140,
+    //   renderCell: params => (
+    //     <>
+    //       <Typography
+    //         color={params.row.gajiBulanIni < 3000000 ? 'secondary.main' : 'error.main'}
+    //         sx={{ fontWeight: 500, fontSize: '0.875rem !important', textAlign: 'center' }}
+    //       >
+    //         {`Rp ${params.row.gajiBulanIni.toLocaleString('id-ID')}`}
+    //       </Typography>
+    //     </>
+    //   )
+    // },
+    // {
+    //   field: 'gajiBulanSblm',
+    //   renderHeader: () => (
+    //     <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
+    //       Gaji Bulan Sebelumnya
+    //     </Typography>
+    //   ),
+    //   headerName: 'Gaji Bulan Sebelumnya ',
+    //   type: 'string',
+    //   width: 140,
+    //   renderCell: params => (
+    //     <>
+    //       <Typography
+    //         color={params.row.gajiBulanSblm < 3000000 ? 'secondary.main' : 'error.main'}
+    //         sx={{ fontWeight: 500, fontSize: '0.875rem !important', textAlign: 'center' }}
+    //       >
+    //         {`Rp ${params.row.gajiBulanSblm.toLocaleString('id-ID')}`}
+    //       </Typography>
+    //     </>
+    //   )
+    // },
+    // {
+    //   field: 'gajiBulanDepan',
+    //   renderHeader: () => (
+    //     <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
+    //       Gaji Bulan Depan
+    //     </Typography>
+    //   ),
+    //   headerName: 'Gaji Bulan Depan ',
+    //   type: 'string',
+    //   width: 140,
+    //   renderCell: params => (
+    //     <>
+    //       <Typography
+    //         color={params.row.gajiBulanDepan < 3000000 ? 'secondary.main' : 'error.main'}
+    //         sx={{ fontWeight: 500, fontSize: '0.875rem !important', textAlign: 'center' }}
+    //       >
+    //         {`Rp ${params.row.gajiBulanDepan.toLocaleString('id-ID')}`}
+    //       </Typography>
+    //     </>
+    //   )
+    // },
     {
       field: 'fungsi',
       headerName: 'Fungsi',
