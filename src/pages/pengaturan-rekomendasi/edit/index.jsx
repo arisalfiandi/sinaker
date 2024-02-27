@@ -13,12 +13,6 @@ const CreateKegiatanPerusahaan = ({ data }) => {
   )
 }
 export async function getServerSideProps(context) {
-  const token = await getToken({ req: context.req, secret: process.env.JWT_SECRET })
-
-  if (!token) {
-    return true
-  }
-
   const kriteriaPegawai = await prisma.kriteria_beban_kerja_pegawai.findUnique({
     where: { id: 1 }
   })
