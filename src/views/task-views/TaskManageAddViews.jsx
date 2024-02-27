@@ -73,7 +73,7 @@ const TaskManageAddViews = propss => {
   const [selectedDateE, setSelectedDateE] = useState(null)
   const [values, setValues] = useState({
     subKegNama: '',
-    subKegJenis: '',
+    subKegJenis: 65,
     subKegTarget: 0,
     subKegUnitTarget: '',
     subKegJenisSample: '',
