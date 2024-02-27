@@ -1,5 +1,5 @@
 // react import
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import * as React from 'react'
 
 // axios
@@ -184,30 +184,31 @@ const CreateKegiatanPerusahaanViews = props => {
 
   const handleCekKonsistensi = e => {
     e.preventDefault()
+  }
+  useEffect(() => {
     // Pegawai
     const pairwiseP = createPairwiseMatrix(criteriaWeights)
     const normalizeP = normalizePairwiseMatrix(pairwiseP)
     const priorityWeightsP = calculatePriorityWeights(normalizeP)
     const consistencyP = calculateConsistency(priorityWeightsP, pairwiseP)
-    // console.log(priorityWeightsP)
-    // console.log(consistencyP)
+
     // Mitra
     const pairwiseM = createPairwiseMatrix(criteriaWeightsM)
     const normalizeM = normalizePairwiseMatrix(pairwiseM)
     const priorityWeightsM = calculatePriorityWeights(normalizeM)
     const consistencyM = calculateConsistency(priorityWeightsM, pairwiseM)
-    // console.log(priorityWeightsM)
-    // console.log(consistencyM)
+
     const currentValues = { ...values }
     currentValues.jumlahPekerjaan = priorityWeightsP[0]
     currentValues.gajiBlnIni = priorityWeightsP[1]
     currentValues.jumlahPekerjaanMitra = priorityWeightsM[0]
     currentValues.gajiBlnIniMitra = priorityWeightsM[1]
     currentValues.gajiBlnSebelumMitra = priorityWeightsM[2]
+
     setValues(currentValues)
     setConsistencyRatioP(consistencyP)
     setConsistencyRatioM(consistencyM)
-  }
+  }, [criteriaWeights, criteriaWeightsM])
 
   const rowsOBefore = [
     { id: 1, kriteria: 'Jumlah Pekerjaan', prioritas: (pegawai.kriteria1 * 100).toFixed(2) },
