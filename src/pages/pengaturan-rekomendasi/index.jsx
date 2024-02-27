@@ -16,12 +16,7 @@ export async function getServerSideProps(context) {
   const token = await getToken({ req: context.req, secret: process.env.JWT_SECRET })
 
   if (!token) {
-    return {
-      redirect: {
-        destination: '/pages/login',
-        permanent: false
-      }
-    }
+    return true
   }
 
   const kriteriaPegawai = await prisma.kriteria_beban_kerja_pegawai.findUnique({
