@@ -326,10 +326,10 @@ const CreateKegiatanPerusahaanViews = props => {
     // },
     {
       field: 'jumlahKegiatan',
-      headerName: 'Jumlah Kegiatan',
+      headerName: 'Jumlah Pekerjaan',
       renderHeader: () => (
         <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
-          Jumlah Kegiatan
+          Jumlah Pekerjaan
         </Typography>
       ),
 
