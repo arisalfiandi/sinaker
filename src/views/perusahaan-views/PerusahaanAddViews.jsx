@@ -85,7 +85,7 @@ const PerusahaanAddViews = () => {
         if (res.status === 201) {
           Swal.fire({
             title: 'Tambah Perusahaan Berhasil',
-            text: 'Tekan OK untuk lanjut',
+            text: '',
             icon: 'success',
             confirmButtonColor: '#68B92E',
             confirmButtonText: 'OK'

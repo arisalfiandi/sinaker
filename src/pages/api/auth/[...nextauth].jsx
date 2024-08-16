@@ -38,7 +38,7 @@ const authOptions = {
 
         if (!user) {
           prisma.$disconnect()
-          throw new Error('invalid credentials')
+          throw new Error('Username atau Password Tidak Ditemukan')
         }
         let validkan = false
         const apakah = (pwLogin, pwDb) => {
@@ -51,7 +51,7 @@ const authOptions = {
         if (!validkan) {
           prisma.$disconnect()
 
-          throw new Error('invalid credentials')
+          throw new Error('Username atau Password Tidak Ditemukan')
         }
 
         return user
@@ -66,9 +66,9 @@ const authOptions = {
   callbacks: {
     jwt(params) {
       // update token
-      // if (params.user?.role) {
-      //   params.token.role = params.user.role
-      // }
+      if (params.user?.role) {
+        params.token.role = params.user.role
+      }
 
       if (params.user?.id) {
         params.token.uid = params.user.id
@@ -77,8 +77,12 @@ const authOptions = {
       // return final_token
       return params.token
     },
-    session: async ({ session, token }) => {
-      // session.role = token.role
+    session({ session, token }) {
+      // Access role from token
+      const userRole = token.role
+
+      // Set session.role to user role
+      session.role = userRole
       session.uid = token.uid
 
       return session

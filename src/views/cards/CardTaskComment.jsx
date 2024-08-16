@@ -48,7 +48,7 @@ const CardTaskComent = props => {
           .put(`/taskdetail/${values.id}`, data)
           .then(res => {
             Swal.fire({
-              title: 'Success!',
+              title: '',
               text: 'Berhasil disimpan',
               icon: 'success',
               confirmButtonText: 'Ok'

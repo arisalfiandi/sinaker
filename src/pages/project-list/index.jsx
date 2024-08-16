@@ -22,9 +22,19 @@ const ProjectList = ({ data }) => {
   )
 }
 export async function getServerSideProps(context) {
+  const token = await getToken({ req: context.req, secret: process.env.JWT_SECRET })
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/pages/login',
+        permanent: false
+      }
+    }
+  }
   let projects
 
-  projects = await prisma.userProject.findMany({
+  projects = await prisma.kegiatan_user_leader.findMany({
     select: {
       project: {
         select: {
@@ -46,7 +56,7 @@ export async function getServerSideProps(context) {
     }
   })
 
-  // projects = await prisma.project.findMany({
+  // projects = await prisma.kegiatan.findMany({
   //   select: {
   //     id: true,
   //     title: true,

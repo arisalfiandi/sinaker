@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   const { method } = req
 
   if (method === 'GET') {
-    const task = await prisma.task.findUnique({
+    const task = await prisma.sub_kegiatan.findUnique({
       where: {
         id: Number(id)
       }
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     console.log('dah put')
     console.log(notes + ' dan ' + realisasi)
     try {
-      const task = await prisma.task.update({
+      const task = await prisma.sub_kegiatan.update({
         where: {
           id: Number(id)
         },
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
     }
   } else if (method === 'DELETE') {
     try {
-      const task = await prisma.task.delete({
+      const task = await prisma.sub_kegiatan.delete({
         where: {
           id: Number(id)
         }

@@ -54,12 +54,12 @@ const App = props => {
     <SessionProvider session={pageProps.session}>
       <CacheProvider value={emotionCache}>
         <Head>
-          <title>{`${themeConfig.templateName} - Sistem Manajemen Kolaboratif`}</title>
+          <title>{`${themeConfig.templateName} - Sistem Manajemen Kegiatan`}</title>
           <meta
             name='description'
-            content={`${themeConfig.templateName} – Sistem Manajemen Kolaboratif – Aplikasi berbasis web dengan system antarmuka yang efisien. `}
+            content={`${themeConfig.templateName} – Sistem Manajemen Kegiatan – Aplikasi berbasis web dengan system antarmuka yang efisien. `}
           />
-          <meta name='keywords' content='Sistem Manajemen Kolaboratif, Material Design, MUI' />
+          <meta name='keywords' content='Sistem Manajemen Kegiatan, Material Design, MUI' />
           <meta name='viewport' content='initial-scale=1, width=device-width' />
         </Head>
 

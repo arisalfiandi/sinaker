@@ -214,10 +214,9 @@ const CardProjectDetail = props => {
   const [project, setProject] = useState(props.data)
   const [userProject, setUserProject] = useState(props.data.UserProject)
   const [arrId, setArrId] = useState(props.dataArrayIdProjectMember)
-  const [session, setSession] = useState({
-    status: 'authenticated',
-    data: { uid: 1099999 }
-  })
+  const session = useSession()
+
+  console.log(session)
   const valueProgressBar =
     Math.ceil((new Date(project.enddate) - new Date()) / (1000 * 3600 * 24)) >= 0
       ? parseInt(
@@ -235,20 +234,10 @@ const CardProjectDetail = props => {
     setValue(newValue)
   }
   // const a = [103214]
-  // console.log(a in arrId)
-  // console.log(a in arrId)
-  // console.log(a in arrId)
 
   const a = [1, 2, 3, 4, 5]
   const b = 3
 
-  console.log(a)
-  console.log(arrId)
-  console.log(arrId.includes(103214))
-  console.log(a.includes(3))
-  console.log(arrId.includes(103214))
-  console.log(arrId.includes(103214))
-  console.log(arrId.includes(103214))
   return (
     <>
       <Card sx={{ height: 350 }}>
@@ -397,8 +386,9 @@ const CardProjectDetail = props => {
                   display={'flex'}
                   // bgcolor={'secondary.light'}
                 >
-                  {project.UserProject_member.map(projek => (
+                  {project.UserProject_member.map((projek, index) => (
                     <Grid
+                      key={index}
                       item
                       md={3}
                       xs={6}
@@ -427,15 +417,25 @@ const CardProjectDetail = props => {
               </>
             </TabPanel>
             <Divider sx={{ marginTop: 3.5 }} />
-            {session.status === 'authenticated' && (arrId.includes(session.data.uid) || session.data.uid === 1099999) && (
+            {/* {session.status === 'authenticated' && (arrId.includes(session.data.uid) || session.data.uid === 1099999) && ( */}
+            {session.status === 'authenticated' && (session.data.role == 'teamleader' || session.data.role == 'admin') && (
               <>
                 <Grid container sx={{ mt: 3 }} spacing={4}>
                   <Grid item>
-                    <Link onClick={e => router.push(`/task-manage/${project.id}`)}>
+                    {/* <Link onClick={e => router.push(`/task-manage/${project.id}`)}>
                       <Button component='div' variant='contained'>
                         Pengaturan Sub Kegiatan
                       </Button>
-                    </Link>
+                    </Link> */}
+                    <Button
+                      onClick={e => {
+                        router.push(`/task-manage-add/${project.id}`)
+                      }}
+                      variant={'contained'}
+                      disabled={arrId.includes(session.data.uid) ? false : true}
+                    >
+                      Tambah Sub Kegiatan
+                    </Button>
                   </Grid>
                   <Grid item>
                     {/* <Button component='div' variant='contained'>

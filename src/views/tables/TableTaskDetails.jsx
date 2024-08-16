@@ -125,14 +125,14 @@ const TableGroupPerusahaan = props => {
 
   const handleDeleteClick = id => () => {
     Swal.fire({
-      title: 'Delete Perusahaan?',
-      text: 'Press "Delete Perusahaan"',
+      title: 'Hapus?',
+      text: '',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#68B92E',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Ya, Delete Perusahaan',
-      cancelButtonText: 'No, Cancel',
+      confirmButtonText: 'Hapus',
+      cancelButtonText: 'Batal',
       reverseButtons: true
     }).then(result => {
       if (result.isConfirmed) {
@@ -147,7 +147,7 @@ const TableGroupPerusahaan = props => {
         /* Read more about handling dismissals below */
         result.dismiss === Swal.DismissReason.cancel
       ) {
-        Swal.fire('Cancelled!', 'Perusahaan is not deleted. Press "OK" to continue.', 'error')
+        Swal.fire('Cancelled!', 'Press "OK" to continue.', 'warning')
       }
     })
   }
@@ -199,8 +199,8 @@ const TableGroupPerusahaan = props => {
           .put(`/perusahaan/${updatedRow.id}`, data)
           .then(res => {
             Swal.fire({
-              title: 'Success!',
-              text: 'Berhasil disimpan',
+              title: 'Berhasil disimpan',
+              text: '',
               icon: 'success',
               confirmButtonText: 'Ok'
             })
@@ -226,8 +226,8 @@ const TableGroupPerusahaan = props => {
         .post(`/perusahaan/addWoDB`, data)
         .then(res => {
           Swal.fire({
-            title: 'Success!',
-            text: 'Berhasil disimpan',
+            title: 'Berhasil disimpan',
+            text: '',
             icon: 'success',
             confirmButtonText: 'Ok'
           })
@@ -302,7 +302,7 @@ const TableGroupPerusahaan = props => {
       width: 180,
       editable: true
     },
-    { field: 'gajiPcl', headerName: 'Gaji PCL', type: 'number', width: 120, editable: true },
+    { field: 'gajiPcl', headerName: 'Honor PCL', type: 'number', width: 120, editable: true },
     {
       field: 'tanggalDob',
       headerName: 'Tanggal Terima Dok Dikab',

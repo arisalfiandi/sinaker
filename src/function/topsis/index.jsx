@@ -10,14 +10,13 @@ import Grid from '@mui/material/Grid'
 const config = {}
 const math = create(all, config)
 
-// General function to sort JSON array by attribute:
 function sortedBy(elm) {
   return function order(a, b) {
     if (b[elm] > a[elm]) {
-      return 1
+      return -1
     }
     if (b[elm] < a[elm]) {
-      return -1
+      return 1
     }
     return 0
   }
@@ -49,7 +48,7 @@ function getBest(m, w, ia, id) {
     })
   })
 
-  // console.log(nm)
+  console.log(nm)
 
   // Weighted normalised alternative matrix
   const wnm = nm.map(row => {
@@ -58,9 +57,9 @@ function getBest(m, w, ia, id) {
     })
   })
 
-  // console.log(wnm)
+  console.log(wnm)
 
-  // Computing ideal and anti-ideal solution
+  // Hitung solusi ideal dan anti ideal
   const numberOfColumns = m._size[1]
   const idealSolutions = new Array(numberOfColumns).fill(0)
   for (let columnIndex = 0; columnIndex < numberOfColumns; columnIndex++) {
@@ -82,10 +81,10 @@ function getBest(m, w, ia, id) {
     }
   }
 
-  // console.log(idealSolutions)
-  // console.log(aidealSolutions)
+  console.log(idealSolutions)
+  console.log(aidealSolutions)
 
-  // Calculate distance to ideal and antiideal solution
+  // Hitung jarak dari solusi ideal dan anti ideal
   const idistances = []
   const aidistances = []
 
@@ -102,10 +101,10 @@ function getBest(m, w, ia, id) {
     aidistances.push(aidistance)
   }
 
-  // console.log(idistances)
-  // console.log(aidistances)
+  console.log(idistances)
+  console.log(aidistances)
 
-  // calculate preference values
+  // Hitung kedekatan relatif
   const proximityScores = []
 
   for (let i = 0; i < idistances.length; i++) {
@@ -113,10 +112,14 @@ function getBest(m, w, ia, id) {
     const negativeDistance = aidistances[i]
 
     const proximityScore = negativeDistance / (positiveDistance + negativeDistance)
-    proximityScores.push(proximityScore)
+    if (isNaN(proximityScore)) {
+      proximityScores.push(1)
+    } else {
+      proximityScores.push(proximityScore)
+    }
   }
 
-  // console.log(proximityScores)
+  console.log(proximityScores)
 
   const indexedPerformanceScore = []
   for (i = 1; i <= m._size[0]; i += 1) {
@@ -130,9 +133,9 @@ function getBest(m, w, ia, id) {
 
   const rankedPerformanceScore = indexedPerformanceScore.sort(sortedBy('index'))
 
-  // console.log(rankedPerformanceScore)
+  console.log(rankedPerformanceScore)
 
   return rankedPerformanceScore
-} // TERMINA FUNCION
+}
 
 export { getBest }

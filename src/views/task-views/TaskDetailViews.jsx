@@ -7,6 +7,15 @@ import Swal from 'sweetalert2'
 // MUI
 
 import Chip from '@mui/material/Chip'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import Avatar from '@mui/material/Avatar'
+import FolderIcon from '@mui/icons-material/Folder'
+import DeleteIcon from '@mui/icons-material/Delete'
+
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
@@ -20,6 +29,7 @@ import IconButton from '@mui/material/IconButton'
 import TextField from '@mui/material/TextField'
 import SendIcon from 'mdi-material-ui/Send'
 import AccountIcon from 'mdi-material-ui/Account'
+import * as React from 'react'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 
@@ -31,8 +41,11 @@ import TabContext from '@mui/lab/TabContext'
 import CardContent from '@mui/material/CardContent'
 
 import TablePerusahaanTaskDetails from 'src/views/tables/TablePerusahaanTaskDetails'
+import TableTaskDetailsHands from 'src/views/tables/TableTaskDetailsHands'
 import CardTaskDetail from 'src/views/cards/CardTaskDetail'
 import CardTaskComment from 'src/views/cards/CardTaskComment'
+
+import { useRouter } from 'next/dist/client/router'
 
 // chartjs dan visualiasi lain
 import { Line, Bar, Doughnut } from 'react-chartjs-2'
@@ -42,6 +55,7 @@ Chart.register(CategoryScale)
 import LinearProgress from '@mui/material/LinearProgress'
 
 const TaskDetailViews = props => {
+  const router = useRouter()
   const statusObj = {
     0: { color: 'warning', status: 'On Progress' },
     1: { color: 'success', status: 'Done' }
@@ -49,11 +63,10 @@ const TaskDetailViews = props => {
   const [participants, setParticipants] = useState(props.dataPerusahaan)
   const [mitra, setMitra] = useState(props.dataMitra)
   const [pegawai, setPegawai] = useState(props.dataPML)
+  const [dataPekerjaanHarian, setDataPekerjaanHarian] = useState(props.dataPH)
+  const [dataPHreal, setDataPHrealn] = useState(1)
   const [dataTask, setDataTasl] = useState(props.data)
-  const [session, setSession] = useState({
-    status: 'authenticated',
-    data: { uid: 1099999 }
-  })
+  const session = useSession()
   const [values, setValues] = useState({
     id: props.data.id,
     target: props.data.target,
@@ -61,15 +74,28 @@ const TaskDetailViews = props => {
     notes: props.data.notes,
     notesSubKeg: props.data.notes,
     jenisKeg: props.data.jenisKeg,
+    subKegJenis: props.data.jenisKeg,
     jenisSample: props.data.jenisSample
   })
 
-  const [templateTable2, setTemplateTable2] = useState(Number(props.dataPerusahaan[0].templateTable))
+  const [valuesHarian, setValuesHarian] = useState({
+    namaKegiatan: '',
+    durasi: '',
+    userId: '',
+    taskId: props.data.id,
+    tanggalSubmit: new Date()
+  })
+
+  const [secondary, setSecondary] = useState(false)
+
+  const [templateTable2, setTemplateTable2] = useState(
+    Number(props.dataPerusahaan.length > 0 ? props.dataPerusahaan[0].templateTable : 5)
+  )
   const [judulGrafik, setJudulGrafik] = useState('asd')
 
   useEffect(() => {
-    let templateTable = Number(props.dataPerusahaan[0].templateTable)
-    console.log(templateTable)
+    let templateTable = Number(props.dataPerusahaan.length > 0 ? props.dataPerusahaan[0].templateTable : 5)
+
     switch (templateTable) {
       case 3:
         return setJudulGrafik('NBS/NKS')
@@ -86,8 +112,6 @@ const TaskDetailViews = props => {
     }
   }, [values])
 
-  // console.log(judulGrafik)
-
   const [value, setValue] = useState('1')
   const handleChangeTab = (event, newValue) => {
     setValue(newValue)
@@ -95,14 +119,86 @@ const TaskDetailViews = props => {
 
   // ganti tarel di your task sesuai dengan tabel dibawah
   const handleTaskUpdate = (realisasi, trgt) => {
-    // setValues({ ...values, target: trgt, realisasi })
+    setValues({ ...values, target: trgt, realisasi })
   }
-
-  const getRealisasi = target => {}
-  // console.log(values)
 
   const handleChange = props => event => {
     setValues({ ...values, [props]: event.target.value })
+  }
+
+  const handleChangeHarian = props => event => {
+    setValuesHarian({ ...valuesHarian, [props]: event.target.value })
+  }
+
+  const handleDeleteKegiatanHarian = async id => {
+    axios
+      .delete(`kegiatan-harian/${id}`)
+      .then(async res => {
+        await Swal.fire({
+          icon: 'success',
+          title: '',
+          text: 'Berhasil dihapus'
+        })
+        router.reload()
+      })
+      .catch(err => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Something went wrong'
+        })
+      })
+  }
+
+  useEffect(() => {
+    const tmp = []
+    session.status === 'authenticated'
+      ? dataPekerjaanHarian.map(ph => {
+          ph.userId === session.data.uid ? tmp.unshift(ph) : ''
+        })
+      : ''
+    setDataPHrealn(tmp)
+  }, [session])
+
+  // function generate(element) {
+  //   const forReturn = []
+  //   dataPHreal.length>0? (
+  //    dataPHreal.map(value =>
+  //       React.cloneElement(element, {
+  //         key: value
+  //       })
+  //     )
+  //   ):''
+  //   return
+  // }
+
+  const handleKegiatanHarian = e => {
+    const data = {
+      namaKegiatan: valuesHarian.namaKegiatan,
+      durasi: Number(valuesHarian.durasi),
+      userId: session.data.uid,
+      taskId: props.data.id,
+      tanggalSubmit: new Date()
+    }
+    axios
+      .post(`/kegiatan-harian`, data)
+      .then(res => {
+        Swal.fire({
+          title: 'Berhasil disimpan',
+          text: '',
+          icon: 'success',
+          confirmButtonText: 'Ok'
+        })
+        router.reload()
+      })
+      .catch(err => {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Something went wrong',
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        })
+      })
   }
 
   const handleSimpan = e => {
@@ -116,8 +212,8 @@ const TaskDetailViews = props => {
           .put(`/taskdetail/${values.id}`, data)
           .then(res => {
             Swal.fire({
-              title: 'Success!',
-              text: 'Berhasil disimpan',
+              title: 'Berhasil disimpan',
+              text: '',
               icon: 'success',
               confirmButtonText: 'Ok'
             })
@@ -133,7 +229,7 @@ const TaskDetailViews = props => {
       : Swal.fire({
           title: 'Error!',
           text: 'Realisasi lebih besar dari target',
-          icon: 'error',
+          icon: 'warning',
           confirmButtonText: 'Ok'
         }).then(
           setValues(values => ({
@@ -144,19 +240,13 @@ const TaskDetailViews = props => {
   }
 
   const handleSimpanPerusahaan = e => {
-    // const data = {
-    //   target: rows.id.target,
-    //   realisasi:rows.id.realisasi,
-    //   hasilPencacahan: rows.id.hasilPencacahan,
-    //   duedate: rows.id.tanggalDob
-    // }
     values.realisasi <= values.target
       ? axios
           .put(`/taskdetail/${values.id}`, data)
           .then(res => {
             Swal.fire({
-              title: 'Success!',
-              text: 'Berhasil disimpan',
+              title: 'Berhasil disimpan',
+              text: '',
               icon: 'success',
               confirmButtonText: 'Ok'
             })
@@ -172,7 +262,7 @@ const TaskDetailViews = props => {
       : Swal.fire({
           title: 'Error!',
           text: 'Realisasi lebih besar dari target',
-          icon: 'error',
+          icon: 'warning',
           confirmButtonText: 'Ok'
         }).then(
           setValues(values => ({
@@ -180,13 +270,6 @@ const TaskDetailViews = props => {
             realisasi: values.target // Perbarui nilai kegRentang
           }))
         )
-  }
-
-  const s = () => {
-    // console.log(values.realisasi)
-    // console.log(values.target)
-    // console.log(values.id)
-    // console.log(values.notes)
   }
 
   // untuk chart
@@ -201,15 +284,16 @@ const TaskDetailViews = props => {
         : Number(pr.templateTable) === 4
         ? pr.nbs + '/' + pr.idSls
         : Number(pr.templateTable) === 5
-        ? pr.namaPerusahaan
+        ? pr.nama
         : Number(pr.templateTable) === 6
-        ? pr.nus + '/' + pr.namaPerusahaan
+        ? pr.nus + '/' + pr.nama
         : Number(pr.templateTable) === 7
-        ? pr.idSbr + '/' + pr.namaPerusahaan
+        ? pr.idSbr + '/' + pr.nama
         : ''
     )
   })
-  // console.log(lineTarel)
+
+  useEffect(() => {}, [valuesHarian])
 
   const dataLine = {
     labels: lineTarel.label,
@@ -237,7 +321,7 @@ const TaskDetailViews = props => {
                 <Grid container p={4} height={450}>
                   <Grid item xs={8} md={10}>
                     <Typography color={'primary.dark'} variant={'h4'}>
-                      {props.data.title}
+                      {props.data.title} hands on table
                     </Typography>
                   </Grid>
                   <Grid item xs={4} md={2} display={'flex'} justifyContent={'end'}>
@@ -267,26 +351,53 @@ const TaskDetailViews = props => {
                     </Typography>
                   </Grid>
 
-                  <Grid mt={2} item xs={12} md={12} height={335} overflow={'auto'}>
+                  <Grid mt={2} item xs={12} md={12} height={335} overflow={'none'}>
                     <Divider sx={{ marginTop: 3.5 }} />
 
                     <Typography variant={'body2'}>{props.data.description}</Typography>
                     <TabContext value={value}>
                       <TabList variant='fullWidth' onChange={handleChangeTab} aria-label='card navigation example'>
-                        <Tab value='1' label='Grafik' />
-                        <Tab value='2' label='Catatan' />
+                        <Tab value='1' label='Pekerjaan Harian' />
+                        <Tab value='2' label='Grafik' />
                       </TabList>
-                      <TabPanel value='1' sx={{ p: 0, height: 170 }}>
+                      <TabPanel value='2' sx={{ p: 0, height: 170 }}>
                         <Typography mt={4} textAlign={'center'} variant={'body1'}>
                           Target Realisasi per {judulGrafik}
                         </Typography>
                         <Grid item md={12} xs={12}>
-                          <Line
+                          <Bar
                             datasetIdKey='id'
                             data={dataLine}
                             width={500}
                             height={140}
                             options={{
+                              plugins: {
+                                title: {
+                                  display: true,
+                                  text: ''
+                                }
+                              },
+                              responsive: true,
+                              scales: {
+                                x: {
+                                  stacked: true
+                                },
+                                y: {
+                                  stacked: true
+                                }
+                              }
+                            }}
+                          />
+                          {/* <Line
+                            datasetIdKey='id'
+                            data={dataLine}
+                            width={500}
+                            height={140}
+                            options={{
+                              scaleOverride: true,
+                              scaleSteps: 114,
+                              scaleStepWidth: 25,
+                              scaleStartValue: 0,
                               responsive: true,
                               scales: {
                                 x: {
@@ -305,13 +416,100 @@ const TaskDetailViews = props => {
                                 }
                               }
                             }}
-                          />
+                          /> */}
                         </Grid>
                       </TabPanel>
-                      <TabPanel value='2' sx={{ p: 0, height: 170 }}>
-                        <Typography variant='h6' sx={{ marginBottom: 2 }}>
-                          {values.notesSubKeg}
-                        </Typography>
+                      <TabPanel value='1' sx={{ p: 0, height: 170 }}>
+                        <Grid container spacing={4}>
+                          <Grid xs={12} mt={5} item height={200} overflow={'auto'}>
+                            {dataPHreal.length > 0 ? (
+                              dataPHreal.map(ph => (
+                                <>
+                                  {' '}
+                                  <List key={ph.id}>
+                                    <ListItem
+                                      secondaryAction={
+                                        <IconButton
+                                          onClick={() => {
+                                            Swal.fire({
+                                              title: 'Hapus Kegiatan Harian?',
+                                              text: '',
+                                              icon: 'warning',
+                                              showCancelButton: true,
+                                              confirmButtonColor: '#3085d6',
+                                              cancelButtonColor: '#d33',
+                                              confirmButtonText: 'Hapus',
+                                              cancelButtonText: 'Batal'
+                                            }).then(result => {
+                                              if (result.isConfirmed) {
+                                                handleDeleteKegiatanHarian(ph.id)
+                                              }
+                                            })
+                                          }}
+                                          edge='end'
+                                          aria-label='delete'
+                                        >
+                                          <DeleteIcon />
+                                        </IconButton>
+                                      }
+                                    >
+                                      <ListItemAvatar>
+                                        <Avatar>
+                                          <FolderIcon />
+                                        </Avatar>
+                                      </ListItemAvatar>
+                                      <ListItemText primary={ph.namaKegiatan} />
+                                    </ListItem>
+                                  </List>
+                                </>
+                              ))
+                            ) : (
+                              <>
+                                <Typography>Belum Ada Kegiatan Harian, Silahkan Input Dibawah</Typography>
+                              </>
+                            )}
+                          </Grid>
+                          <Grid mt={2} item xs={12}>
+                            <Grid container spacing={4}>
+                              <Grid item xs={7}>
+                                <TextField
+                                  value={valuesHarian.namaKegiatan}
+                                  size='small'
+                                  fullWidth
+                                  multiline
+                                  type={'string'}
+                                  onChange={handleChangeHarian('namaKegiatan')}
+                                  placeholder='Nama Kegiatan'
+                                />
+                              </Grid>
+                              <Grid item xs={4}>
+                                {' '}
+                                <TextField
+                                  value={valuesHarian.durasi}
+                                  size='small'
+                                  fullWidth
+                                  multiline
+                                  type={'number'}
+                                  onChange={handleChangeHarian('durasi')}
+                                  placeholder='Durasi Pengerjaan '
+                                />
+                              </Grid>
+                              <Grid item mt={5} xs={1}>
+                                {' '}
+                                <InputAdornment position='end'>
+                                  <IconButton
+                                    onClick={handleKegiatanHarian}
+                                    size='medium'
+                                    type='submit'
+                                    aria-label='toggle password visibility'
+                                  >
+                                    <SendIcon></SendIcon>
+                                  </IconButton>
+                                </InputAdornment>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        </Grid>
                       </TabPanel>
                     </TabContext>
                   </Grid>
@@ -324,7 +522,7 @@ const TaskDetailViews = props => {
                   <Grid container p={4}>
                     <Grid item xs={12} md={12}>
                       <Typography color={'primary.dark'} variant={'h5'}>
-                        Pekerjaan Anda
+                        Progres Sub Kegiatan
                       </Typography>
                     </Grid>
                     <Grid item xs={12} md={12} mt={2} display={'flex'} alignItems={'start'}>
@@ -405,7 +603,8 @@ const TaskDetailViews = props => {
         {}
 
         {session.status === 'authenticated' &&
-          (session.data.uid === 99 || values.jenisKeg === 65 || values.jenisKeg === 67) && (
+          (session.data.role == 'teamleader' || session.data.role == 'admin') &&
+          (values.jenisKeg === 65 || values.jenisKeg === 67) && (
             <TablePerusahaanTaskDetails
               data={participants}
               dataProjectFungsi={props.data.project.fungsi}
@@ -415,6 +614,10 @@ const TaskDetailViews = props => {
               dataTaskSample={values.jenisSample}
               dataJenisKeg={values.jenisKeg}
               dataUpdateTarget={handleTaskUpdate}
+              dataMitraLimitHonor={props.dataMitraLimit}
+              dataTemplate={props.dataT}
+              dataTemplateKolom={props.dataTK}
+              dataSubKegId={values.id}
             ></TablePerusahaanTaskDetails>
             // <Button type='submit' variant={'contained'} onClick={handleSimpan} fullWidth>
             //   Simpan

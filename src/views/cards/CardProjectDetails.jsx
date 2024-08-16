@@ -70,7 +70,7 @@ const CardProjectDetails = props => {
             </Typography>
             <Typography variant='body2'>{rentang[Number(intervalWaktu)].waktu}</Typography>
           </Grid>
-          <Grid item xs={3} display={'flex'} justifyContent={'center'} alignItems={'center'}>
+          {/* <Grid item xs={3} display={'flex'} justifyContent={'center'} alignItems={'center'}>
             <Box sx={{ mb: 3.5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Typography variant='h6' sx={{ lineHeight: 1, fontWeight: 600, fontSize: '3rem !important' }}>
                 {Math.round(
@@ -88,7 +88,7 @@ const CardProjectDetails = props => {
                 %
               </Typography>
             </Box>
-          </Grid>
+          </Grid> */}
         </Grid>
         <Divider sx={{ marginTop: 4.5, marginBottom: 4.75 }} />
         <Grid container spacing={4}>

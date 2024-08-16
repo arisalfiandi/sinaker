@@ -49,7 +49,7 @@ const TableMasterKode = () => {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, Hapus  !'
+      confirmButtonText: 'Hapus'
     }).then(result => {
       if (result.isConfirmed) {
         router.push('/master-kode')

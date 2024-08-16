@@ -41,24 +41,6 @@ const TableTaskDashboard = props => {
   // }, [])
   const columns = [
     {
-      field: 'taskName',
-      renderCell: params => (
-        <Link
-          onClick={async e => {
-            router.push(`/task-detail/${params.row.taskId}`)
-          }}
-          sx={{ cursor: 'pointer' }}
-        >
-          <Typography sx={{ fontWeight: 500, textDecoration: 'underline', fontSize: '0.875rem !important' }}>
-            {params.row.taskName}
-          </Typography>
-        </Link>
-      ),
-
-      headerName: 'Sub Kegiatan',
-      width: 200
-    },
-    {
       field: 'kegiatanName',
       headerName: 'Kegiatan',
       renderCell: params => (
@@ -76,6 +58,25 @@ const TableTaskDashboard = props => {
       width: 140
     },
     {
+      field: 'taskName',
+      renderCell: params => (
+        <Link
+          onClick={async e => {
+            router.push(`/task-manage-edit/${params.row.taskId}`)
+          }}
+          sx={{ cursor: 'pointer' }}
+        >
+          <Typography sx={{ fontWeight: 500, textDecoration: 'underline', fontSize: '0.875rem !important' }}>
+            {params.row.taskName}
+          </Typography>
+        </Link>
+      ),
+
+      headerName: 'Sub Kegiatan',
+      width: 200
+    },
+
+    {
       field: 'target',
       headerName: 'Realisasi/Target',
       renderCell: params => (
@@ -84,6 +85,20 @@ const TableTaskDashboard = props => {
         </Typography>
       ),
       width: 140
+    },
+    {
+      field: 'persentase',
+      headerName: 'Persentase progres',
+      renderCell: params => (
+        <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
+          {params.row.target === 0 || params.row.realisasi === 0
+            ? 0
+            : Math.round(100 * (Number(params.row.target - params.row.realisasi) / Number(params.row.target)))}
+          %
+        </Typography>
+      ),
+      type: 'string',
+      width: 180
     },
 
     {

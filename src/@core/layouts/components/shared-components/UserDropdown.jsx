@@ -43,10 +43,7 @@ const UserDropdown = props => {
   const [user, setUser] = useState({})
   const [anchorEl, setAnchorEl] = useState('')
 
-  const [session, setSession] = useState({
-    status: 'authenticated',
-    data: { uid: 1099999 }
-  })
+  const session = useSession()
   // console.log(session)
 
   const getUser = async () => {
@@ -76,8 +73,8 @@ const UserDropdown = props => {
     handleDropdownClose()
 
     const confirm = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'You will be logged out',
+      title: 'Anda yakin?',
+      text: 'untuk log out?',
       icon: 'warning',
       confirmButtonColor: '#68B92E',
       confirmButtonText: 'OK',
@@ -146,13 +143,13 @@ const UserDropdown = props => {
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
               <Typography sx={{ fontWeight: 600 }}>{user.name}</Typography>
               <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
-                {user.id == 99 ? 'admin' : 'staff'}
+                {user.role == 'teamleader' ? 'pjk' : user.role}
               </Typography>
             </Box>
           </Box>
         </Box>
         <Divider sx={{ mt: 0, mb: 1 }} />
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose(`/pegawai-detail-gaji/${user.id}`)}>
+        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose(`/account/${user.id}`)}>
           <Box sx={styles}>
             <AccountOutline sx={{ marginRight: 2 }} />
             Profile

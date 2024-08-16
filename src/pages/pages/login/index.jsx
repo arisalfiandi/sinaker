@@ -98,8 +98,8 @@ const LoginPage = () => {
 
     if (res.status === 200) {
       Swal.fire({
-        title: 'Login Success',
-        text: 'Press OK to continue',
+        title: 'Login Berhasil',
+        text: '',
         icon: 'success',
         confirmButtonColor: '#68B92E',
         confirmButtonText: 'OK'
@@ -108,7 +108,7 @@ const LoginPage = () => {
       router.push('/')
     } else {
       Swal.fire({
-        title: 'Login Failed',
+        title: 'Login Gagal',
         text: res.error,
         icon: 'error',
         confirmButtonColor: '#d33',
@@ -140,7 +140,7 @@ const LoginPage = () => {
             <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
               Welcome to {themeConfig.templateName}! 👋🏻
             </Typography>
-            <Typography variant='body2'>Please sign-in to your account and start the adventure</Typography>
+            {/* <Typography variant='body2'>Please sign-in to your account and start the adventure</Typography> */}
           </Box>
           <form autoComplete='off' onSubmit={e => e.preventDefault()}>
             <TextField

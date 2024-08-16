@@ -16,6 +16,8 @@ import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 
+import { useSession } from 'next-auth/react'
+
 // icon
 
 import CardTimKerja from 'src/views/cards/CardTimKerja'
@@ -40,7 +42,7 @@ const TimKerjaViews = props => {
       }
     })
   )
-
+  const session = useSession()
   // const [cardP2, setCardP2] = useState(0)
 
   // useEffect(() => {
@@ -83,11 +85,16 @@ const TimKerjaViews = props => {
             </Select>
           </FormControl>
         </Grid> */}
-        <Grid item md={6} xs={12} display={'flex'} justifyContent={'end'}>
-          <Link onClick={e => router.push(`/create-tim-kerja`)}>
-            <Button variant={'contained'}>Buat Tim Kerja</Button>
-          </Link>
-        </Grid>
+
+        {session.status === 'authenticated' && session.data.role == 'teamleader' && (
+          <>
+            <Grid item md={6} xs={12} display={'flex'} justifyContent={'end'}>
+              <Link onClick={e => router.push(`/create-tim-kerja`)}>
+                <Button variant={'contained'}>Buat Tim Kerja</Button>
+              </Link>
+            </Grid>
+          </>
+        )}
         <Grid item md={12}>
           {' '}
           <Grid container spacing={6}>

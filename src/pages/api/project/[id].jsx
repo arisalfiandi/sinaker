@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   const { method } = req
 
   if (method === 'GET') {
-    const project = await prisma.project.findUnique({
+    const project = await prisma.kegiatan.findUnique({
       where: {
         id: Number(id)
       }
@@ -21,30 +21,34 @@ export default async function handler(req, res) {
       req.body
 
     console.log('asdasdasd')
-    if (isArchived) {
-      try {
-        const project = await prisma.project.update({
-          where: {
-            id: Number(id)
-          },
-          data: {
-            isArchived: isArchived
-          }
-        })
+    console.log('asdasdasd')
+    console.log('asdasdasd')
+    console.log(enddate)
+    console.log(title)
+    // if (isArchived) {
+    //   try {
+    //     const project = await prisma.kegiatan.update({
+    //       where: {
+    //         id: Number(id)
+    //       },
+    //       data: {
+    //         isArchived: isArchived
+    //       }
+    //     })
 
-        return res.status(200).json({ success: true, data: project })
-      } catch (error) {
-        if (error instanceof PrismaClientKnownRequestError) {
-          console.log(error.message)
-          return res.status(400).json({ success: false, message: error.message })
-        }
+    //     return res.status(200).json({ success: true, data: project })
+    //   } catch (error) {
+    //     if (error instanceof PrismaClientKnownRequestError) {
+    //       console.log(error.message)
+    //       return res.status(400).json({ success: false, message: error.message })
+    //     }
 
-        return res.status(500).json({ success: false, message: error.message })
-      }
-    }
+    //     return res.status(500).json({ success: false, message: error.message })
+    //   }
+    // }
 
     try {
-      const project = await prisma.project.update({
+      const project = await prisma.kegiatan.update({
         where: {
           id: Number(id)
         },
@@ -71,7 +75,7 @@ export default async function handler(req, res) {
     }
   } else if (method === 'DELETE') {
     try {
-      const project = await prisma.project.delete({
+      const project = await prisma.kegiatan.delete({
         where: {
           id: Number(id)
         }

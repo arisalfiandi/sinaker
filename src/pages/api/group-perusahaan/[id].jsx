@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   const { method } = req
 
   if (method === 'GET') {
-    const gP = await prisma.project.findUnique({
+    const gP = await prisma.kegiatan.findUnique({
       where: {
         id: Number(id)
       }

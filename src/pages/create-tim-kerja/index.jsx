@@ -9,11 +9,25 @@ const CreateKegiatanPerusahaan = ({ data }) => {
   const [user, setUser] = useState(JSON.parse(data))
   return (
     <>
-      <CreateTimKerjaViews data={user.user} dataTpp={user.perusahaanTask}></CreateTimKerjaViews>
+      <CreateTimKerjaViews
+        data={user.user}
+        dataTpp={user.perusahaanTask}
+        dataKriteria={user.kriteria}
+      ></CreateTimKerjaViews>
     </>
   )
 }
 export async function getServerSideProps(context) {
+  const token = await getToken({ req: context.req, secret: process.env.JWT_SECRET })
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/pages/login',
+        permanent: false
+      }
+    }
+  }
   let user
 
   user = await prisma.user.findMany({
@@ -23,37 +37,29 @@ export async function getServerSideProps(context) {
       }
     },
     include: {
-      UserProject: {
-        select: {
-          id: true,
-          project: true
-        }
-      },
-      TaskOrganik: {
-        select: {
-          id: true,
-          task: true
-        }
-      },
       TimKerjaPegawai: true,
-      taskToDo: true,
-      beban_kerja_pegawai: {
-        select: {
-          bebanKerja: true
+      pekerjaan_harian: {
+        include: {
+          task: true
         }
       }
     }
   })
 
-  const perusahaanTask = await prisma.taskPerusahaanProduksi.findMany({
-    include: {
-      perusahaan: true,
-      task: true
-    }
+  const perusahaanTask = await prisma.data_target_realisasi.findMany({
+    // include: {
+    //   perusahaan: true,
+    //   task: true
+    // }
+  })
+
+  const kriteria = await prisma.kriteria_beban_kerja_pegawai.findUnique({
+    where: { id: 1 }
   })
 
   const data = {
     perusahaanTask,
+    kriteria,
     user
   }
   return {

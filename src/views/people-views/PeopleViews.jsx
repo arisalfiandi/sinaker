@@ -12,10 +12,7 @@ const PeopleViews = props => {
   const router = useRouter()
   const [cardP, setCardP] = useState(props.data)
   const [dataTpp, setdataTpp] = useState(props.dataTpp)
-  const [session, setSession] = useState({
-    status: 'authenticated',
-    data: { uid: 1099999 }
-  })
+  const session = useSession()
   console.log(session)
 
   return (
@@ -25,7 +22,7 @@ const PeopleViews = props => {
           <Typography variant={'h5'}>Daftar Pegawai</Typography>
         </Grid>
         <Grid item md={6} xs={6} display={'flex'} justifyContent={'end'}>
-          {session.status === 'authenticated' && session.data.uid === 1099999 && (
+          {session.status === 'authenticated' && (session.data.uid === 1099999 || session.data.role == 'admin') && (
             <>
               <Link onClick={e => router.push(`/add-people`)}>
                 <Button variant={'contained'}> Tambah Pegawai</Button>

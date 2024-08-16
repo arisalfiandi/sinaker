@@ -11,22 +11,32 @@ const TaskManageAdd = ({ data }) => {
     <>
       <TaskManageAddViews
         data={project.project}
-        dataPerusahaan={project.companies}
-        dataAllPerusahaan={project.perusahaans}
         dataMitra={project.mitras}
         dataTaskPerusahaan={project.perusahaanTask}
         dataOrganik={project.oraganik}
-        dataTimKerja={project.timkerja}
         dataBobotMitra={project.kriteriaMitra}
         dataBobotPegawai={project.kriteriaPegawai}
         dataOrganikProject_member={project.oraganikProject_member}
+        dataT={project.template}
+        dataTK={project.templateKolom}
       ></TaskManageAddViews>
     </>
   )
 }
 
 export async function getServerSideProps(context) {
-  const project = await prisma.project.findUnique({
+  const token = await getToken({ req: context.req, secret: process.env.JWT_SECRET })
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/pages/login',
+        permanent: false
+      }
+    }
+  }
+
+  const project = await prisma.kegiatan.findUnique({
     where: {
       id: parseInt(context.params.id)
     },
@@ -48,50 +58,23 @@ export async function getServerSideProps(context) {
 
   let companies
 
-  companies = await prisma.groupPerusahaan.findMany({
-    select: {
-      id: true,
-      Perusahaangroup: {
-        select: {
-          id: true,
-          perusahaan: true
-        }
-      },
-      nama: true,
-      fungsi: true
-    }
-  })
+  // let timkerja
 
-  let timkerja
-
-  timkerja = await prisma.TimKerja.findMany({
-    select: {
-      id: true,
-      timKerjaPegawai: {
-        select: {
-          id: true,
-          userId_fkey: true
-        }
-      },
-      nama: true,
-      fungsi: true
-    }
-  })
+  // timkerja = await prisma.TimKerja.findMany({
+  //   select: {
+  //     id: true,
+  //     timKerjaPegawai: {
+  //       select: {
+  //         id: true,
+  //         userId_fkey: true
+  //       }
+  //     },
+  //     nama: true,
+  //     fungsi: true
+  //   }
+  // })
 
   let perusahaans
-
-  perusahaans = await prisma.perusahaan.findMany({
-    select: {
-      id: true,
-      kip: true,
-      nama: true,
-      desa: true,
-      namaDesa: true,
-      kecamatan: true,
-      namaKec: true,
-      alamat: true
-    }
-  })
 
   const perusahaanTask = await prisma.taskPerusahaanProduksi.findMany({
     include: {
@@ -150,7 +133,8 @@ export async function getServerSideProps(context) {
         select: {
           bebanKerja: true
         }
-      }
+      },
+      pekerjaan_harian: true
     }
   })
 
@@ -163,23 +147,25 @@ export async function getServerSideProps(context) {
   })
 
   let oraganikProject_member
-  oraganikProject_member = await prisma.userProject_member.findMany({
+  oraganikProject_member = await prisma.kegiatan_user_member.findMany({
     where: {
       projectId: parseInt(context.params.id)
     }
   })
 
+  const template = await prisma.template_table.findMany({})
+  const templateKolom = await prisma.template_table_kolom.findMany({})
+
   const data = {
     project,
-    companies,
-    perusahaans,
     mitras,
     perusahaanTask,
     oraganik,
-    timkerja,
     oraganikProject_member,
     kriteriaMitra,
-    kriteriaPegawai
+    kriteriaPegawai,
+    template,
+    templateKolom
   }
 
   return {

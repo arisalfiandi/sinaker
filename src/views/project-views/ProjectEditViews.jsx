@@ -56,7 +56,7 @@ const ProjectEditViews = props => {
     kegKetua: props.data.project.projectLeaderId,
     kegArsip: props.data.project.isArchived
   })
-
+  console.log(props.data.project)
   const handleDateChange = date => {
     setSelectedDate(date)
     console.log(date)
@@ -114,8 +114,8 @@ const ProjectEditViews = props => {
       .put(`/project/${values.id}`, data)
       .then(res => {
         Swal.fire({
-          title: 'Success!',
-          text: 'Project has been updated',
+          title: 'Berhasil tersimpan',
+          text: '',
           icon: 'success',
           confirmButtonText: 'Ok'
         })
@@ -139,7 +139,7 @@ const ProjectEditViews = props => {
             <Typography variant='h5'>Edit Kegiatan</Typography>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          {/* <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <InputLabel id='demo-simple-select-helper-label'>Periode Waktu</InputLabel>
               <Select
@@ -159,7 +159,7 @@ const ProjectEditViews = props => {
                 <MenuItem value={80}>Ad-Hok</MenuItem>
               </Select>
             </FormControl>
-          </Grid>
+          </Grid> */}
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
@@ -169,6 +169,23 @@ const ProjectEditViews = props => {
               label='Nama Kegiatan'
               name='namaKegiatan'
             />
+          </Grid>
+          <Grid item xs={12} sm={12} lg={6}>
+            <DatePickerWrapper>
+              <DatePicker
+                selected={selectedDateE}
+                sx={{ width: 1000 }}
+                showYearDropdown
+                showMonthDropdown
+                placeholderText='Tanggal Berakhir'
+                value={selectedDateE}
+                customInput={<CustomInputEnd />}
+                onChange={handleDateChangeE}
+                dateFormat='dd/MM/yyyy'
+                className='custom-datepicker'
+                name='tanggalBerakhir'
+              />
+            </DatePickerWrapper>
           </Grid>
 
           {/* <Grid item xs={12} sm={12} lg={6}>
@@ -191,7 +208,7 @@ const ProjectEditViews = props => {
             name='gajiPCL'
           />
         </Grid> */}
-          <Grid item xs={12} sm={12} lg={12}>
+          {/* <Grid item xs={12} sm={12} lg={12}>
             <FormControl fullWidth>
               <InputLabel id='demo-simple-select-helper-label'>Fungsi</InputLabel>
               <Select
@@ -211,7 +228,7 @@ const ProjectEditViews = props => {
                 <MenuItem value={7}>Integrasi Pengolahan dan Diseminasi Statistik</MenuItem>
               </Select>
             </FormControl>
-          </Grid>
+          </Grid> */}
 
           <Grid item xs={12}>
             <TextField
@@ -226,7 +243,7 @@ const ProjectEditViews = props => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={12} lg={6}>
+          {/* <Grid item xs={12} sm={12} lg={6}>
             <DatePickerWrapper>
               <DatePicker
                 sx={{ width: 1000 }}
@@ -242,26 +259,9 @@ const ProjectEditViews = props => {
                 name='tanggalMulai'
               />
             </DatePickerWrapper>
-            {/* <TextField fullWidth multiline label='Tanggal Dimulai' placeholder='Tanggal Dimulai' /> */}
-          </Grid>
+            <TextField fullWidth multiline label='Tanggal Dimulai' placeholder='Tanggal Dimulai' /> 
+          </Grid> */}
 
-          <Grid item xs={12} sm={12} lg={6}>
-            <DatePickerWrapper>
-              <DatePicker
-                selected={selectedDateE}
-                sx={{ width: 1000 }}
-                showYearDropdown
-                showMonthDropdown
-                placeholderText='Tanggal Berakhir'
-                value={selectedDateE}
-                customInput={<CustomInputEnd />}
-                onChange={handleDateChangeE}
-                dateFormat='dd/MM/yyyy'
-                className='custom-datepicker'
-                name='tanggalBerakhir'
-              />
-            </DatePickerWrapper>
-          </Grid>
           <Grid item xs={12} md={12}>
             <Typography variant='h6' sx={{ py: '5px' }}>
               Penanggung Jawab Kegiatan

@@ -85,8 +85,8 @@ const PeopleAddViews = props => {
         .put(`/edel-perusahaan/${values.id}`, data)
         .then(res => {
           Swal.fire({
-            title: 'Success!',
-            text: 'Project has been updated',
+            title: 'Berhasil disimpan',
+            text: '',
             icon: 'success',
             confirmButtonText: 'Ok'
           })
@@ -102,7 +102,7 @@ const PeopleAddViews = props => {
         })
     } catch (error) {
       Swal.fire({
-        title: 'Edit Perusahaan Gagal',
+        title: 'Gagal disimpan',
         text: error,
         icon: 'error',
         confirmButtonColor: '#d33',

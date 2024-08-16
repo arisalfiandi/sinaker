@@ -30,6 +30,7 @@ const TableTask = props => {
   const router = useRouter()
   const [task, setTask] = useState(props.data)
 
+  console.log(task)
   const columns = [
     // { field: 'id', headerName: 'No', type: 'string', width: 70 },
     {
@@ -37,11 +38,24 @@ const TableTask = props => {
       renderCell: params => (
         <Link
           onClick={async e => {
-            router.push(`/task-detail/${params.row.taskId}`)
+            router.push(`/task-manage-edit/${params.row.taskId}`)
           }}
           sx={{ cursor: 'pointer' }}
         >
-          <Typography sx={{ fontWeight: 500, textDecoration: 'underline', fontSize: '0.875rem !important' }}>
+          <Typography
+            color={
+              params.row.durationOff != 'Kegiatan belum dimulai'
+                ? params.row.durationOff != 'Kegiatan belum dimulai'
+                  ? params.row.realisasi <= params.row.akumulasiTargetHariIni
+                    ? params.row.realisasi <= params.row.yellowAkumulasiTargetHariIni
+                      ? 'error.main'
+                      : 'warning.main'
+                    : 'success.main'
+                  : 'secondary.dark'
+                : 'secondary.dark'
+            }
+            sx={{ fontWeight: 500, textDecoration: 'underline', fontSize: '0.875rem !important' }}
+          >
             {params.row.taskName}
           </Typography>
         </Link>
@@ -70,7 +84,20 @@ const TableTask = props => {
           }}
           sx={{ cursor: 'pointer' }}
         >
-          <Typography sx={{ textDecoration: 'underline', fontWeight: 500, fontSize: '0.875rem !important' }}>
+          <Typography
+            color={
+              params.row.durationOff != 'Kegiatan belum dimulai'
+                ? params.row.durationOff != 'Kegiatan belum dimulai'
+                  ? params.row.realisasi <= params.row.akumulasiTargetHariIni
+                    ? params.row.realisasi <= params.row.yellowAkumulasiTargetHariIni
+                      ? 'error.main'
+                      : 'warning.main'
+                    : 'success.main'
+                  : 'secondary.dark'
+                : 'secondary.dark'
+            }
+            sx={{ textDecoration: 'underline', fontWeight: 500, fontSize: '0.875rem !important' }}
+          >
             {params.row.kegiatanName}
           </Typography>
         </Link>
@@ -86,7 +113,21 @@ const TableTask = props => {
         </Typography>
       ),
       renderCell: params => (
-        <Typography textAlign={'center'} sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
+        <Typography
+          textAlign={'center'}
+          color={
+            params.row.durationOff != 'Kegiatan belum dimulai'
+              ? params.row.durationOff != 'Kegiatan belum dimulai'
+                ? params.row.realisasi <= params.row.akumulasiTargetHariIni
+                  ? params.row.realisasi <= params.row.yellowAkumulasiTargetHariIni
+                    ? 'error.main'
+                    : 'warning.main'
+                  : 'success.main'
+                : 'secondary.dark'
+              : 'secondary.dark'
+          }
+          sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}
+        >
           {params.row.realisasi}
         </Typography>
       ),
@@ -99,7 +140,21 @@ const TableTask = props => {
         <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>Target</Typography>
       ),
       renderCell: params => (
-        <Typography textAlign={'center'} sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
+        <Typography
+          textAlign={'center'}
+          color={
+            params.row.durationOff != 'Kegiatan belum dimulai'
+              ? params.row.durationOff != 'Kegiatan belum dimulai'
+                ? params.row.realisasi <= params.row.akumulasiTargetHariIni
+                  ? params.row.realisasi <= params.row.yellowAkumulasiTargetHariIni
+                    ? 'error.main'
+                    : 'warning.main'
+                  : 'success.main'
+                : 'secondary.dark'
+              : 'secondary.dark'
+          }
+          sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}
+        >
           {params.row.target}
         </Typography>
       ),
@@ -139,9 +194,52 @@ const TableTask = props => {
       ),
       headerName: 'Jenis Kegiatan',
       renderCell: params => (
-        <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
+        <Typography
+          color={
+            params.row.durationOff != 'Kegiatan belum dimulai'
+              ? params.row.durationOff != 'Kegiatan belum dimulai'
+                ? params.row.realisasi <= params.row.akumulasiTargetHariIni
+                  ? params.row.realisasi <= params.row.yellowAkumulasiTargetHariIni
+                    ? 'error.main'
+                    : 'warning.main'
+                  : 'success.main'
+                : 'secondary.dark'
+              : 'secondary.dark'
+          }
+          sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}
+        >
           {' '}
           {jenisSub[parseInt(params.row.jenisKegiatan)].namaJenisSub}
+        </Typography>
+      ),
+      type: 'string',
+      width: 180
+    },
+    {
+      field: 'startDate',
+      renderHeader: () => (
+        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
+          Tanggal Mulai
+        </Typography>
+      ),
+      headerName: 'Deadline',
+      renderCell: params => (
+        <Typography
+          color={
+            params.row.durationOff != 'Kegiatan belum dimulai'
+              ? params.row.durationOff != 'Kegiatan belum dimulai'
+                ? params.row.realisasi <= params.row.akumulasiTargetHariIni
+                  ? params.row.realisasi <= params.row.yellowAkumulasiTargetHariIni
+                    ? 'error.main'
+                    : 'warning.main'
+                  : 'success.main'
+                : 'secondary.dark'
+              : 'secondary.dark'
+          }
+          sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}
+        >
+          {' '}
+          {params.row.startDate}
         </Typography>
       ),
       type: 'string',
@@ -156,7 +254,141 @@ const TableTask = props => {
       ),
       headerName: 'Deadline',
       renderCell: params => (
-        <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}> {params.row.deadline}</Typography>
+        <Typography
+          color={
+            params.row.durationOff != 'Kegiatan belum dimulai'
+              ? params.row.durationOff != 'Kegiatan belum dimulai'
+                ? params.row.realisasi <= params.row.akumulasiTargetHariIni
+                  ? params.row.realisasi <= params.row.yellowAkumulasiTargetHariIni
+                    ? 'error.main'
+                    : 'warning.main'
+                  : 'success.main'
+                : 'secondary.dark'
+              : 'secondary.dark'
+          }
+          sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}
+        >
+          {' '}
+          {params.row.deadline}
+        </Typography>
+      ),
+      type: 'string',
+      width: 180
+    },
+    {
+      field: 'durasi',
+      renderHeader: () => (
+        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>Durasi</Typography>
+      ),
+      headerName: 'Durasi Kegiatan',
+      renderCell: params => (
+        <Typography
+          textAlign={'center'}
+          color={
+            params.row.durationOff != 'Kegiatan belum dimulai'
+              ? params.row.durationOff != 'Kegiatan belum dimulai'
+                ? params.row.realisasi <= params.row.akumulasiTargetHariIni
+                  ? params.row.realisasi <= params.row.yellowAkumulasiTargetHariIni
+                    ? 'error.main'
+                    : 'warning.main'
+                  : 'success.main'
+                : 'secondary.dark'
+              : 'secondary.dark'
+          }
+          sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}
+        >
+          {params.row.durasi} Hari
+        </Typography>
+      ),
+      type: 'string',
+      width: 180
+    },
+    {
+      field: 'status2',
+      renderHeader: () => (
+        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
+          Target Harian
+        </Typography>
+      ),
+      headerName: 'Target Harian',
+      renderCell: params => (
+        <Typography
+          textAlign={'center'}
+          color={
+            params.row.durationOff != 'Kegiatan belum dimulai'
+              ? params.row.durationOff != 'Kegiatan belum dimulai'
+                ? params.row.realisasi <= params.row.akumulasiTargetHariIni
+                  ? params.row.realisasi <= params.row.yellowAkumulasiTargetHariIni
+                    ? 'error.main'
+                    : 'warning.main'
+                  : 'success.main'
+                : 'secondary.dark'
+              : 'secondary.dark'
+          }
+          sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}
+        >
+          {params.row.status2}
+        </Typography>
+      ),
+      type: 'string',
+      width: 180
+    },
+    {
+      field: 'durationOff',
+      renderHeader: () => (
+        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
+          Hari Berjalan
+        </Typography>
+      ),
+      headerName: 'Hari Berjalan',
+      renderCell: params => (
+        <Typography
+          textAlign={'center'}
+          color={
+            params.row.durationOff != 'Kegiatan belum dimulai'
+              ? params.row.durationOff != 'Kegiatan belum dimulai'
+                ? params.row.realisasi <= params.row.akumulasiTargetHariIni
+                  ? params.row.realisasi <= params.row.yellowAkumulasiTargetHariIni
+                    ? 'error.main'
+                    : 'warning.main'
+                  : 'success.main'
+                : 'secondary.dark'
+              : 'secondary.dark'
+          }
+          sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}
+        >
+          {params.row.durationOff} Hari
+        </Typography>
+      ),
+      type: 'string',
+      width: 180
+    },
+    {
+      field: 'akumulasiTargetHariIni',
+      renderHeader: () => (
+        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
+          Akumulasi Target Sampai Hari Ini
+        </Typography>
+      ),
+      headerName: 'Akumulasi Target Sampai Hari Ini',
+      renderCell: params => (
+        <Typography
+          color={
+            params.row.durationOff != 'Kegiatan belum dimulai'
+              ? params.row.durationOff != 'Kegiatan belum dimulai'
+                ? params.row.realisasi <= params.row.akumulasiTargetHariIni
+                  ? params.row.realisasi <= params.row.yellowAkumulasiTargetHariIni
+                    ? 'error.main'
+                    : 'warning.main'
+                  : 'success.main'
+                : 'secondary.dark'
+              : 'secondary.dark'
+          }
+          sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}
+        >
+          {' '}
+          {params.row.akumulasiTargetHariIni}
+        </Typography>
       ),
       type: 'string',
       width: 180
@@ -166,19 +398,55 @@ const TableTask = props => {
   const data = []
 
   let nobaris = 1
-  const rows = task.map(task => ({
-    id: nobaris++,
-    taskName: task.title,
-    taskId: task.id,
-    kegiatanName: task.project.title,
-    kegiatanNameid: task.project.id,
-    jenisKegiatan: task.jenisKeg,
-    target: task.target,
-    realisasi: task.realisasi,
-    status: task.target / task.realisasi === 1 ? 'Done' : 'On Progress',
-    deadline: new Date(task.duedate).toLocaleDateString('id'),
-    userId: task.userId
-  }))
+  const rows = task.map(task => {
+    const duedateObj = new Date(task.duedate)
+    const startDateObj = new Date(task.startDate)
+    const tanggalSekarang = new Date()
+
+    const differenceInMilliseconds = duedateObj.getTime() - startDateObj.getTime()
+    const differenceInDays = differenceInMilliseconds / (1000 * 3600 * 24) + 1
+
+    const hariBerjalan =
+      tanggalSekarang >= startDateObj
+        ? tanggalSekarang <= duedateObj
+          ? Math.round(Math.abs(tanggalSekarang.getTime() - startDateObj.getTime()) / (1000 * 3600 * 24)) + 1
+          : 'Kegiatan telah selesai'
+        : 'Kegiatan belum dimulai'
+    const targetHarian = Math.round(task.target / differenceInDays)
+    const akumulasiTargetHariIni =
+      tanggalSekarang >= startDateObj
+        ? tanggalSekarang <= duedateObj
+          ? Number(targetHarian * hariBerjalan)
+          : 'Kegiatan telah selesai'
+        : 'Kegiatan belum dimulai'
+    const yellowAkumulasiTargetHariIni =
+      tanggalSekarang >= startDateObj
+        ? tanggalSekarang <= duedateObj
+          ? Math.round(targetHarian * hariBerjalan * 0.8)
+          : 'Kegiatan telah selesai'
+        : 'Kegiatan belum dimulai'
+
+    return {
+      ...task,
+      id: nobaris++,
+      taskName: task.title,
+      taskId: task.id,
+      kegiatanName: task.project.title,
+      kegiatanNameid: task.project.id,
+      jenisKegiatan: task.jenisKeg,
+      target: task.target,
+      realisasi: task.realisasi,
+      status: task.target / task.realisasi === 1 ? 'Done' : 'On Progress',
+      deadline: new Date(task.duedate).toLocaleDateString('id'),
+      startDate: new Date(task.startDate).toLocaleDateString('id'),
+      userId: task.userId,
+      durasi: differenceInDays,
+      status2: targetHarian,
+      durationOff: hariBerjalan,
+      akumulasiTargetHariIni,
+      yellowAkumulasiTargetHariIni
+    }
+  })
   return (
     <>
       <Typography variant={'h5'} mb={5}>

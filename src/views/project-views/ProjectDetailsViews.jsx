@@ -32,12 +32,9 @@ const ProjectDetailsViews = props => {
   const [arridForpass, setArridForpass] = useState(props.dataUpm.map(dupm => dupm.userId))
   const [arrId, setArrId] = useState([])
   const [tampil, setTampil] = useState(false)
-  const [session, setSession] = useState({
-    status: 'authenticated',
-    data: { uid: 1099999 }
-  })
+  const session = useSession()
 
-  console.log(session)
+  // console.log(session)
   useEffect(() => {
     let ar = []
     // let idUserLogin = session.data.uid
@@ -67,21 +64,21 @@ const ProjectDetailsViews = props => {
   }
   const handleDelete = () => {
     Swal.fire({
-      title: 'Delete Project?',
-      text: '',
+      title: 'Hapus Kegiatan?',
+      text: 'Semua data pada kegiatan ini akan dihapus',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#68B92E',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, Delete Project',
-      cancelButtonText: 'No, Cancel',
+      confirmButtonText: 'Hapus',
+      cancelButtonText: 'Batal',
       reverseButtons: true
     }).then(result => {
       if (result.isConfirmed) {
         axios
           .delete(`/project/${project.id}`)
           .then(res => {
-            Swal.fire('Deleted', 'Project has been deleted. ', 'success')
+            Swal.fire('Berhasil terhapus', 'success')
 
             router.push('/project-list')
           })
@@ -92,7 +89,7 @@ const ProjectDetailsViews = props => {
         /* Read more about handling dismissals below */
         result.dismiss === Swal.DismissReason.cancel
       ) {
-        Swal.fire('Cancelled!', ' Press "OK" to continue.', 'error')
+        Swal.fire('Cancelled!', ' Press "OK" to continue.', 'warning')
       }
     })
   }
@@ -111,51 +108,71 @@ const ProjectDetailsViews = props => {
       }
     })
   }
-  return (
-    <>
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={8}>
-          <CardProjectInfo dataArrayIdProjectMember={arridForpass} data={project}></CardProjectInfo>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <CardProjectDetailProgress data={project.Task}></CardProjectDetailProgress>
-        </Grid>
-        <Grid item xs={12} md={12}>
-          <TableProjectDetailTask data={project.Task}></TableProjectDetailTask>
-        </Grid>
-      </Grid>
-      {session.status === 'authenticated' && (arrId.includes(session.data.uid) || session.data.uid === 1099999) && (
+  return session
+    ? session.status === 'authenticated' && (
         <>
-          <Grid mt={2} container>
-            <Grid item md={12} display={'flex'} justifyContent={'end'} flexDirection={'row'}>
-              <Button
-                onClick={e => {
-                  router.push(`/project-edit/${project.id}`)
-                }}
-                size='medium'
-                variant={'contained'}
-                sx={{ margin: 2 }}
-              >
-                Edit
-              </Button>
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={8}>
+              <CardProjectInfo dataArrayIdProjectMember={arridForpass} data={project}></CardProjectInfo>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <CardProjectDetailProgress
+                dataArrayIdProjectMember={arridForpass}
+                data={project.Task}
+              ></CardProjectDetailProgress>
+            </Grid>
+            <Grid item xs={12} md={12}>
+              <TableProjectDetailTask
+                dataArrayIdProjectMember={arridForpass}
+                data={project.Task}
+              ></TableProjectDetailTask>
+            </Grid>
+          </Grid>
+          {/* {session.status === 'authenticated' && (arrId.includes(session.data.uid) || session.data.uid === 1099999) && ( */}
+          {session.status === 'authenticated' &&
+            (session.data.role == 'teamleader' || session.data.role == 'pjk' || session.data.role == 'admin') && (
+              <>
+                <Grid mt={2} container>
+                  <Grid item md={12} display={'flex'} justifyContent={'end'} flexDirection={'row'}>
+                    <Button
+                      onClick={e => {
+                        router.push(`/project-edit/${project.id}`)
+                      }}
+                      size='medium'
+                      variant={'contained'}
+                      sx={{ margin: 2 }}
+                      disabled={arrId.includes(session.data.uid) ? false : true}
+                    >
+                      Edit
+                    </Button>
 
-              {/* <Link onClick={e => router.push('/project-edit')}>
+                    {/* <Link onClick={e => router.push('/project-edit')}>
      <Button onClick={handleEdit} size='medium' variant={'contained'} sx={{ margin: 2 }}>
        Edit
      </Button>
    </Link> */}
-              <Button color={'error'} onClick={handleDelete} size='medium' variant={'contained'} sx={{ margin: 2 }}>
-                Delete
-              </Button>
-              {/* <Button onClick={handleArchieve} size='medium' variant={'contained'} sx={{ margin: 2 }}>
+                    <Button
+                      disabled={
+                        session.status === 'authenticated' ? (arrId.includes(session.data.uid) ? false : true) : true
+                      }
+                      color={'error'}
+                      onClick={handleDelete}
+                      size='medium'
+                      variant={'contained'}
+                      sx={{ margin: 2 }}
+                    >
+                      Delete
+                    </Button>
+                    {/* <Button onClick={handleArchieve} size='medium' variant={'contained'} sx={{ margin: 2 }}>
      Archieve
    </Button> */}
-            </Grid>
-          </Grid>
+                  </Grid>
+                </Grid>
+              </>
+            )}
         </>
-      )}
-    </>
-  )
+      )
+    : console.log('no session')
 }
 
 export default ProjectDetailsViews

@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   const { method } = req
 
   if (method === 'GET') {
-    const task = await prisma.task.findUnique({
+    const task = await prisma.sub_kegiatan.findUnique({
       where: {
         id: Number(id)
       }
@@ -17,10 +17,10 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ success: true, data: task })
   } else if (method === 'PUT') {
-    const { title, jenisKeg, target, unitTarget, duedate, description, month, year } = req.body
+    const { title, jenisKeg, target, realisasi, unitTarget, startDate, duedate, description, month, year } = req.body
 
     try {
-      const task = await prisma.task.update({
+      const task = await prisma.sub_kegiatan.update({
         where: {
           id: Number(id)
         },
@@ -28,11 +28,21 @@ export default async function handler(req, res) {
           title,
           jenisKeg,
           target,
+          realisasi,
           unitTarget,
+          startDate,
           duedate,
           description,
           month,
           year
+        }
+      })
+      const bulanTarel = await prisma.data_target_realisasi.updateMany({
+        where: {
+          taskId: Number(id)
+        },
+        data: {
+          month: parseInt(month)
         }
       })
 
@@ -43,7 +53,7 @@ export default async function handler(req, res) {
     }
   } else if (method === 'DELETE') {
     try {
-      const task = await prisma.task.delete({
+      const task = await prisma.sub_kegiatan.delete({
         where: {
           id: Number(id)
         }

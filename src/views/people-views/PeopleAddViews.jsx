@@ -44,7 +44,7 @@ const PeopleAddViews = () => {
     pegawaiId: '',
     pegawaiNama: '',
     pegawaiNIP: '',
-    pegawaiFungsi: '',
+    pegawaiFungsi: 3,
     pegawaiEmail: '',
     pegawaiPassword: ''
   })
@@ -95,8 +95,8 @@ const PeopleAddViews = () => {
 
         if (res.status === 201) {
           Swal.fire({
-            title: 'Tambah Pegawai Success',
-            text: 'Tekan OK untuk lanjut',
+            title: 'Tambah pegawai berhasil',
+            text: '',
             icon: 'success',
             confirmButtonColor: '#68B92E',
             confirmButtonText: 'OK'
@@ -158,7 +158,7 @@ const PeopleAddViews = () => {
             label='Nip'
             sx={{ marginBottom: 4 }}
           />
-          <FormControl fullWidth sx={{ marginBottom: 4 }}>
+          {/* <FormControl fullWidth sx={{ marginBottom: 4 }}>
             <InputLabel id='form-layouts-separator-select-label'>Fungsi</InputLabel>
             <Select
               sx={{ height: 50 }}
@@ -175,7 +175,7 @@ const PeopleAddViews = () => {
               <MenuItem value={6}>Neraca Wilayah dan Analisis Statistik</MenuItem>
               <MenuItem value={7}>Integrasi Pengolahan dan Diseminasi Statistik</MenuItem>
             </Select>
-          </FormControl>
+          </FormControl> */}
           <TextField
             value={values.pegawaiEmail}
             onChange={handleChange('pegawaiEmail')}

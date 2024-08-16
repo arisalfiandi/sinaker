@@ -14,7 +14,17 @@ const ProjectDetail = ({ data }) => {
 }
 
 export async function getServerSideProps(context) {
-  const project = await prisma.project.findUnique({
+  const token = await getToken({ req: context.req, secret: process.env.JWT_SECRET })
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/pages/login',
+        permanent: false
+      }
+    }
+  }
+  const project = await prisma.kegiatan.findUnique({
     where: {
       id: parseInt(context.params.id)
     },
@@ -38,7 +48,7 @@ export async function getServerSideProps(context) {
     }
   })
 
-  const upm = await prisma.userProject_member.findMany({
+  const upm = await prisma.kegiatan_user_member.findMany({
     where: {
       projectId: parseInt(context.params.id)
     }

@@ -107,8 +107,8 @@ const FormMitra = props => {
       .put(`/mitra/${values.id}`, data)
       .then(res => {
         Swal.fire({
-          title: 'Success!',
-          text: 'Edit Mitra Berhasil',
+          title: 'Berhasil disimpan',
+          text: '',
           icon: 'success',
           confirmButtonText: 'Ok'
         })

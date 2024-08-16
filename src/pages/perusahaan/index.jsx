@@ -14,6 +14,16 @@ const Perusahaan = ({ data }) => {
 }
 
 export async function getServerSideProps(context) {
+  const token = await getToken({ req: context.req, secret: process.env.JWT_SECRET })
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/pages/login',
+        permanent: false
+      }
+    }
+  }
   let perusahaans
 
   perusahaans = await prisma.perusahaan.findMany({
@@ -30,7 +40,7 @@ export async function getServerSideProps(context) {
     }
   })
 
-  // projects = await prisma.project.findMany({
+  // projects = await prisma.kegiatan.findMany({
   //   select: {
   //     id: true,
   //     title: true,

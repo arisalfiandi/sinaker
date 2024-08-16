@@ -7,12 +7,27 @@ const Mitra = ({ data }) => {
   const [mitra, setMitra] = useState(JSON.parse(data))
   return (
     <>
-      <MitraDetailGajiViews data={mitra.mitra} dataTpp={mitra.perusahaanTask}></MitraDetailGajiViews>
+      <MitraDetailGajiViews
+        dataKolom={mitra.templateKolom}
+        data={mitra.mitra}
+        dataTpp={mitra.perusahaanTask}
+        dataHonorTetap={mitra.honorTetap}
+      ></MitraDetailGajiViews>
     </>
   )
 }
 
 export async function getServerSideProps(context) {
+  const token = await getToken({ req: context.req, secret: process.env.JWT_SECRET })
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/pages/login',
+        permanent: false
+      }
+    }
+  }
   let mitra
 
   mitra = await prisma.mitra.findMany({
@@ -21,16 +36,42 @@ export async function getServerSideProps(context) {
     }
   })
 
-  const perusahaanTask = await prisma.taskPerusahaanProduksi.findMany({
+  // const perusahaanTask = await prisma.taskPerusahaanProduksi.findMany({
+  //   include: {
+  //     perusahaan: true,
+  //     task: true
+  //   }
+  // })
+  const perusahaanTask = await prisma.data_target_realisasi.findMany({
     include: {
-      perusahaan: true,
       task: true
     }
   })
 
+  const honorTetap = await prisma.sub_kegiatan_mitra.findMany({
+    where: {
+      mitraId: parseInt(context.params.id)
+    },
+    select: {
+      task: {
+        select: {
+          duedate: true
+        }
+      },
+      honor: true,
+      taskId: true,
+      mitraId: true
+    }
+  })
+
+  const template = await prisma.template_table.findMany({})
+  const templateKolom = await prisma.template_table_kolom.findMany({})
   const data = {
     perusahaanTask,
-    mitra
+    mitra,
+    template,
+    templateKolom,
+    honorTetap
   }
 
   return {

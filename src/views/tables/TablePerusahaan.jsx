@@ -36,10 +36,7 @@ const jenisFungsi = {
 }
 
 const TablePerusahaan = props => {
-  const [session, setSession] = useState({
-    status: 'authenticated',
-    data: { uid: 1099999 }
-  })
+  const session = useSession()
   const { dataUser } = props
   const rows = dataUser.map(row => ({
     id: row.id,
@@ -60,7 +57,7 @@ const TablePerusahaan = props => {
         await Swal.fire({
           icon: 'success',
           title: 'Success',
-          text: 'Perusahaan Deleted'
+          text: 'Berhasil dihapus'
         })
         router.reload()
       })

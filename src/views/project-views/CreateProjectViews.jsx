@@ -31,13 +31,18 @@ import MenuItem from '@mui/material/MenuItem'
 import { pink } from '@mui/material/colors'
 import Checkbox from '@mui/material/Checkbox'
 import FormGroup from '@mui/material/FormGroup'
+import FormLabel from '@mui/material/FormLabel'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
+import CardContent from '@mui/material/CardContent'
+import CardActions from '@mui/material/CardActions'
 
 import { DataGrid } from '@mui/x-data-grid'
 
 import TableAddParticipant from 'src/views/tables/TableAddParticipant'
+import TimelineKegiatan from 'src/views/form-layouts/TimelineKegiatan'
+import { EmailSearch } from 'mdi-material-ui'
 
 const CustomInputStart = forwardRef((props, ref) => {
   return <TextField fullWidth {...props} inputRef={ref} label='Tanggal Mulai' autoComplete='on' />
@@ -56,9 +61,11 @@ const CreateProjectViews = props => {
     }))
   )
   const [timKerja, setTimKerja] = useState(props.dataTim)
+  const [isiAll, setIsiAll] = useState('0')
   const [anggota, setAnggota] = useState(0)
   const [selectedDate, setSelectedDate] = useState(null)
   const [selectedDateE, setSelectedDateE] = useState(null)
+  const [fieldFilled, setFieldFilled] = useState({})
   const [disabled, setDisabled] = useState({
     jan: false,
     feb: false,
@@ -85,8 +92,10 @@ const CreateProjectViews = props => {
     kegAnggota: [dataUser[3].name, dataUser[1].name],
     kegKetuaId: '',
     kegJumlah: 0,
-    kegBulan: 0
+    kegBulan: 0,
+    jumlahSubKeg: 0
   })
+
   const [bulan, setBulan] = useState({
     jan: false,
     feb: false,
@@ -101,6 +110,18 @@ const CreateProjectViews = props => {
     nov: false,
     dec: false
   })
+
+  const [subKeg, setSubKeg] = useState({
+    pelatihan: false,
+    persiapan: false,
+    listing: false,
+    pencacahan: false,
+    pengolahanEntri: false,
+    pengolahanValidasi: false,
+    diseminasi: false,
+    evaluasi: false
+  })
+  const [namaSubKeg, setNamaSubKeg] = useState([])
 
   // transform bulan bulan ke array date, nyaring mana aja yang true
   useEffect(() => {
@@ -149,25 +170,9 @@ const CreateProjectViews = props => {
       })
       .filter(date => date !== null)
 
-    console.log('Tanggal pertama dan terakhir bulan yang memiliki nilai true:', bulanTrue)
     setValues({ ...values, kegJumlah: jumlahTrue, kegBulan: bulanTrue })
   }, [bulan])
 
-  // coba asal bre,
-  // useEffect(() => {
-  //   const nilai = Object.values(bulan)
-  //   const kunci = Object.keys(bulan)
-  //   console.log(kunci)
-  //   const tmpJmlh = 0
-  //   const tmpBln = []
-  //   nilai.map(n => {
-  //     n === true ? (tmpJmlh = tmpJmlh + 1) : 0
-  //   })
-
-  //   setValues({ ...values, kegJumlah: tmpJmlh })
-  // }, [bulan])
-
-  // buat nyimpen di [values] dari input pilih tim kerja sama anggota tim (intinya handle tim dan anggotanya)
   useEffect(() => {
     const dataAnggota = {}
     const dataAnggotaId = []
@@ -210,7 +215,6 @@ const CreateProjectViews = props => {
       }
     })
 
-    // console.log(tmpId)
     setValues({ ...values, kegAnggotaId: tmpId })
   }, [values.kegAnggota])
 
@@ -261,7 +265,6 @@ const CreateProjectViews = props => {
     }, [])
 
     // newBulanFalse skrg isiny daftar key bulan yang  false
-    // console.log(newBulanFalse)
 
     const bulanTrueValues = bulanValues.filter(value => value === true)
     const jumlahBulanTrue = bulanTrueValues.length
@@ -323,21 +326,17 @@ const CreateProjectViews = props => {
       ...bulan,
       [event.target.name]: event.target.checked
     })
-    // console.log(bulan)
   }
 
   const handleDateChange = date => {
     setSelectedDate(date)
-    // console.log(date)
   }
   const handleDateChangeE = date => {
     setSelectedDateE(date)
-    // console.log(date)
   }
 
   const handleChange = props => event => {
     setValues({ ...values, [props]: event.target.value })
-    // console.log(values)
   }
 
   const handleRentangChange = event => {
@@ -361,57 +360,130 @@ const CreateProjectViews = props => {
     }))
   }
   // handle submit disini
+
+  useEffect(() => {
+    setFieldFilled({
+      ...fieldFilled,
+      fieldNama: values.kegNama,
+      fieldPeriode: values.kegRentang,
+      fieldTim: values.kegKetuaId,
+      fieldAnggota: values.kegAnggotaId,
+      fieldBulan: values.kegBulan
+    })
+  }, [values])
+
+  let button
+  button = (
+    <>
+      {/* <input accept='image/*' style={{ display: 'none' }} id='raised-button-file' multiple type='file' />
+      <label htmlFor='raised-button-file'>
+        <Button onClick={handleSubmitFile} size='medium' sx={{ mr: 2 }} variant='contained' component='span'>
+          Browse
+        </Button>
+      </label> */}
+      <TimelineKegiatan dataMeet={props.dataRapat}></TimelineKegiatan>
+    </>
+  )
+
+  const handleChangeSubKeg = event => {
+    setSubKeg({
+      ...subKeg,
+      [event.target.name]: event.target.checked
+    })
+  }
+
+  useEffect(() => {
+    const subKegValues = Object.values(subKeg)
+    const subKegTrueValues = subKegValues.filter(value => value === true)
+    const jumlahSubKegTrue = subKegTrueValues.length
+    setValues({ ...values, jumlahSubKeg: jumlahSubKegTrue })
+  }, [subKeg])
+
+  useEffect(() => {
+    const entries = Object.entries(subKeg)
+
+    const trueEntries = entries.filter(([key, value]) => value === true)
+
+    const trueKeys = trueEntries.map(([key]) => key)
+
+    setNamaSubKeg(trueKeys)
+  }, [subKeg])
+
+  useEffect(() => {
+    const allFilled = Object.values(fieldFilled).every(
+      value =>
+        (typeof value === 'string' && value.trim() !== '') ||
+        (Array.isArray(value) && value.length > 0) ||
+        (typeof value === 'number' && value !== null)
+    )
+    setIsiAll(allFilled ? '1' : '0')
+  }, [fieldFilled])
+
+  console.log(isiAll)
+  console.log(fieldFilled)
   const handleProject = async e => {
     e.preventDefault()
 
     try {
       while (true) {
-        const res = await axios.post('/project', {
-          title: values.kegNama,
-          rentangWaktu: values.kegRentang.toString(),
-          startdate: selectedDate,
-          enddate: selectedDateE,
-          bulan,
-          fungsi: values.kegFungsi,
-          description: values.kegDesk,
-          projectLeaderId: values.kegKetuaId,
-          anggotaTimId: values.kegAnggotaId,
-          createdById: 99,
-          jumlahKegiatan: values.kegJumlah,
-          bulanKegiatan: values.kegBulan
-        })
-
-        if (res.status === 201) {
-          Swal.fire({
-            title: 'Create Project Success',
-            text: 'Press OK to continue',
-            icon: 'success',
-            confirmButtonColor: '#68B92E',
-            confirmButtonText: 'OK'
-          }).then(router.push('/project-list'))
-
-          setValues({
-            kegNama: '',
-            kegRentang: '',
-            kegGajiPml: '',
-            kegGajiPcl: '',
-            kegFungsi: '',
-            kegDesk: '',
-            kegTim: '',
-            kegAnggotaId: '',
-            kegAnggota: [dataUser[3].name, dataUser[1].name],
-            kegKetuaId: ''
+        if (isiAll == '1') {
+          const res = await axios.post('/project', {
+            title: values.kegNama,
+            rentangWaktu: values.kegRentang.toString(),
+            startdate: selectedDate,
+            enddate: selectedDateE,
+            bulan,
+            fungsi: values.kegFungsi,
+            description: values.kegDesk,
+            projectLeaderId: values.kegKetuaId,
+            anggotaTimId: values.kegAnggotaId,
+            createdById: 99,
+            jumlahKegiatan: values.kegJumlah,
+            bulanKegiatan: values.kegBulan,
+            subKeg: namaSubKeg,
+            jumlahSubKeg: values.jumlahSubKeg
           })
 
-          setSelectedDate(new Date())
-          setSelectedDateE(null)
+          if (res.status === 201) {
+            Swal.fire({
+              title: 'Kegiatan berhasil dibuat',
+              text: '',
+              icon: 'success',
+              confirmButtonColor: '#68B92E',
+              confirmButtonText: 'OK'
+            }).then(router.push('/project-list'))
+
+            setValues({
+              kegNama: '',
+              kegRentang: '',
+              kegGajiPml: '',
+              kegGajiPcl: '',
+              kegFungsi: '',
+              kegDesk: '',
+              kegTim: '',
+              kegAnggotaId: '',
+              kegAnggota: [dataUser[3].name, dataUser[1].name],
+              kegKetuaId: ''
+            })
+
+            setSelectedDate(new Date())
+            setSelectedDateE(null)
+          }
+        } else {
+          Swal.fire({
+            title: 'Form belum lengkap',
+            text: 'Pastikan semua field telah terisi',
+            icon: 'warning',
+            confirmButtonColor: 'warning.main',
+            confirmButtonText: 'OK'
+          })
         }
 
         break
       }
     } catch (error) {
       Swal.fire({
-        title: 'Create Project Failed',
+        title: 'Kegiatan gagal dibuat',
         text: error,
         icon: 'error',
         confirmButtonColor: '#d33',
@@ -419,7 +491,6 @@ const CreateProjectViews = props => {
       })
     }
   }
-
   const router = useRouter()
   return (
     <Card>
@@ -457,18 +528,20 @@ const CreateProjectViews = props => {
               onChange={handleChange('kegNama')}
               multiline
               label='Nama Kegiatan'
+              placeholder='SUSENAS/SAKERNAS/dll.'
               name='namaKegiatan'
             />
           </Grid>
-          <Grid item xs={12} md={12} sx={{ backgroundColor: 'primary' }}>
-            <FormGroup row>
+          <Grid item xs={6}>
+            <FormLabel component='legend'>Bulan Kegiatan</FormLabel>
+            <FormGroup sx={{ minHeight: 150, padding: 2, border: 1, borderColor: '#DCDCDC', borderRadius: 1 }} row>
               <FormControlLabel
                 value='Januari'
                 control={
                   <Checkbox disabled={disabled.jan} checked={bulan.jan} onChange={handleChangeBulan} name='jan' />
                 }
                 label='Jan'
-                labelPlacement='top'
+                labelPlacement='right'
               />
               <FormControlLabel
                 value='Februari'
@@ -476,7 +549,7 @@ const CreateProjectViews = props => {
                   <Checkbox disabled={disabled.feb} checked={bulan.feb} onChange={handleChangeBulan} name='feb' />
                 }
                 label='Feb'
-                labelPlacement='top'
+                labelPlacement='right'
               />
               <FormControlLabel
                 value='Maret'
@@ -484,7 +557,7 @@ const CreateProjectViews = props => {
                   <Checkbox disabled={disabled.mar} checked={bulan.mar} onChange={handleChangeBulan} name='mar' />
                 }
                 label='Mar'
-                labelPlacement='top'
+                labelPlacement='right'
               />
               <FormControlLabel
                 value='April'
@@ -492,7 +565,7 @@ const CreateProjectViews = props => {
                   <Checkbox disabled={disabled.apr} checked={bulan.apr} onChange={handleChangeBulan} name='apr' />
                 }
                 label='Apr'
-                labelPlacement='top'
+                labelPlacement='right'
               />
               <FormControlLabel
                 value='Mei'
@@ -500,7 +573,7 @@ const CreateProjectViews = props => {
                   <Checkbox disabled={disabled.may} checked={bulan.may} onChange={handleChangeBulan} name='may' />
                 }
                 label='May'
-                labelPlacement='top'
+                labelPlacement='right'
               />
               <FormControlLabel
                 value='Juni'
@@ -508,7 +581,7 @@ const CreateProjectViews = props => {
                   <Checkbox disabled={disabled.june} checked={bulan.june} onChange={handleChangeBulan} name='june' />
                 }
                 label='June'
-                labelPlacement='top'
+                labelPlacement='right'
               />
               <FormControlLabel
                 value='Juli'
@@ -516,7 +589,7 @@ const CreateProjectViews = props => {
                   <Checkbox disabled={disabled.july} checked={bulan.july} onChange={handleChangeBulan} name='july' />
                 }
                 label='July'
-                labelPlacement='top'
+                labelPlacement='right'
               />
               <FormControlLabel
                 value='Agustus'
@@ -524,7 +597,7 @@ const CreateProjectViews = props => {
                   <Checkbox disabled={disabled.aug} checked={bulan.aug} onChange={handleChangeBulan} name='aug' />
                 }
                 label='Aug'
-                labelPlacement='top'
+                labelPlacement='right'
               />
               <FormControlLabel
                 value='September'
@@ -532,7 +605,7 @@ const CreateProjectViews = props => {
                   <Checkbox disabled={disabled.sep} checked={bulan.sep} onChange={handleChangeBulan} name='sep' />
                 }
                 label='Sep'
-                labelPlacement='top'
+                labelPlacement='right'
               />
               <FormControlLabel
                 value='Oktober'
@@ -540,7 +613,7 @@ const CreateProjectViews = props => {
                   <Checkbox disabled={disabled.oct} checked={bulan.oct} onChange={handleChangeBulan} name='oct' />
                 }
                 label='Oct'
-                labelPlacement='top'
+                labelPlacement='right'
               />
               <FormControlLabel
                 value='November'
@@ -548,7 +621,7 @@ const CreateProjectViews = props => {
                   <Checkbox disabled={disabled.nov} checked={bulan.nov} onChange={handleChangeBulan} name='nov' />
                 }
                 label='Nov'
-                labelPlacement='top'
+                labelPlacement='right'
               />
               <FormControlLabel
                 value='Desember'
@@ -556,8 +629,77 @@ const CreateProjectViews = props => {
                   <Checkbox disabled={disabled.dec} checked={bulan.dec} onChange={handleChangeBulan} name='dec' />
                 }
                 label='Dec'
-                labelPlacement='top'
+                labelPlacement='right'
               />
+            </FormGroup>
+          </Grid>
+          <Grid item xs={6}>
+            <FormLabel component='legend'>Sub Kegiatan</FormLabel>
+            <FormGroup sx={{ minHeight: 150, padding: 2, border: 1, borderColor: '#DCDCDC', borderRadius: 1 }} row>
+              <FormControlLabel
+                name='pelatihan'
+                onChange={handleChangeSubKeg}
+                labelPlacement='right'
+                value='63'
+                control={<Checkbox />}
+                label='Pelatihan'
+              />
+              <FormControlLabel
+                name='persiapan'
+                onChange={handleChangeSubKeg}
+                labelPlacement='right'
+                value='64'
+                control={<Checkbox />}
+                label='Persiapan'
+              />
+              <FormControlLabel
+                name='listing'
+                onChange={handleChangeSubKeg}
+                labelPlacement='right'
+                value='66'
+                control={<Checkbox />}
+                label='Listing'
+              />
+              <FormControlLabel
+                name='pencacahan'
+                onChange={handleChangeSubKeg}
+                labelPlacement='right'
+                value='65'
+                control={<Checkbox />}
+                label='Pencacahan'
+              />
+              <FormControlLabel
+                name='pengolahanEntri'
+                onChange={handleChangeSubKeg}
+                labelPlacement='right'
+                value='67'
+                control={<Checkbox />}
+                label='Pengolahan-Entri'
+              />
+              <FormControlLabel
+                labelPlacement='70'
+                value='pengolahanValidasi'
+                control={<Checkbox />}
+                label='Pengolahan-Validasi'
+              />
+              <FormControlLabel
+                name='diseminasi'
+                onChange={handleChangeSubKeg}
+                labelPlacement='right'
+                value='69'
+                control={<Checkbox />}
+                label='Diseminasi'
+              />
+              <FormControlLabel
+                name='evaluasi'
+                onChange={handleChangeSubKeg}
+                labelPlacement='right'
+                value='68'
+                control={<Checkbox />}
+                label='Evaluasi'
+              />
+              {/* <FormControlLabel required control={<Checkbox />} label='Required' />
+              <FormControlLabel disabled control={<Checkbox />} label='Disabled' /> */}
             </FormGroup>
           </Grid>
 
@@ -589,7 +731,7 @@ const CreateProjectViews = props => {
               multiline
               minRows={3}
               label='Deskripsi Kegiatan'
-              placeholder='Description'
+              placeholder='Dapat dikosongkan..'
               value={values.kegDesk}
               onChange={handleChange('kegDesk')}
               name='kegaitanDesk'
@@ -668,13 +810,36 @@ const CreateProjectViews = props => {
               }}
               filterSelectedOptions
               renderTags={(value, getTagProps) =>
-                value.map((option, index) => <Chip variant='outlined' label={option} {...getTagProps({ index })} />)
+                value.map((option, index) => (
+                  <Chip key={index} variant='outlined' label={option} {...getTagProps({ index })} />
+                ))
               }
               renderInput={params => (
                 <TextField {...params} variant='outlined' label='Anggota Tim' placeholder='Tambah Anggota Tim' />
               )}
             />
           </Grid>
+
+          {/* <Grid item xs={12} height={220}>
+            <Card sx={{ backgroundColor: '#F4F4F4', borderSpacing: 50, border: '4px dashed #E7E7E7' }}>
+              <CardContent sx={{ height: 210, textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+                {/* <Grid container display={'flex'} justifyContent={'center'}>
+                        <Grid display={'flex'} justifyContent={'center'} item xs={12}>
+                          <IconButton>
+                            <CloudUploadRoundedIcon sx={{ fontSize: 100 }} size={'large'}></CloudUploadRoundedIcon>
+                          </IconButton>
+                        </Grid>
+                        <Grid display={'flex'} justifyContent={'center'} item xs={12}>
+                          <Typography>Upload your files here!</Typography>
+                        </Grid>
+                      </Grid> 
+                <Grid display={'flex'} justifyContent={'center'} item xs={12}>
+                  {button} 
+                </Grid>
+              </CardContent>
+              <CardActions className='card-action-dense'></CardActions>
+            </Card>
+          </Grid> */}
         </Grid>
         {/* <TableAddParticipant></TableAddParticipant> */}
         <Divider sx={{ margin: 0 }} />

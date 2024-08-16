@@ -16,6 +16,8 @@ import {
   Appointments,
   TodayButton
 } from '@devexpress/dx-react-scheduler-material-ui'
+// circular bar
+import CircularProgress from '@mui/material/CircularProgress'
 
 import { useRouter } from 'next/dist/client/router'
 import { useState, useEffect, useRef } from 'react'
@@ -141,29 +143,114 @@ const TimelineViews = props => {
 
   const router = useRouter()
 
-  const [cardP, setCardP] = useState(props.data)
-  console.log(cardP)
-  const appointments = cardP.map(task => ({
+  const [cardP, setCardP] = useState(
+    props.data.length > 0
+      ? props.data.map(item => {
+          return { ...item, tugas: 1 } // Menambahkan properti "alamat"
+        })
+      : ''
+  )
+
+  const [rapat, setRapat] = useState(
+    props.dataRapat.length > 0
+      ? props.dataRapat.map(item => {
+          return { ...item, tugas: 0, duedate: item.startDate } // Menambahkan properti "alamat"
+        })
+      : ''
+  )
+
+  const gabungan = [...cardP, ...rapat]
+
+  const appointments = gabungan.map(task => ({
     title: (
       <>
-        <Grid container>
-          <Grid item md={12} display={'flex'}>
-            <Link
-              onClick={e => {
-                router.push(`/project-detail/${task.project.id}`)
-              }}
-            >
-              <Typography variant='body2' sx={{ textDecoration: 'underline', cursor: 'pointer' }} color={'white'}>
-                {task.title}
-              </Typography>
-              <Typography variant='body2' color={'white'}>
-                {Math.ceil(100 * (task.realisasi / task.target)) == 0
-                  ? 0
-                  : `${Math.ceil(100 * (task.realisasi / task.target))}%`}
-              </Typography>
-            </Link>
-          </Grid>
-        </Grid>
+        {task.tugas === 1 ? (
+          <>
+            <Grid container>
+              <Grid item md={12} display={'flex'}>
+                <Link
+                  onClick={e => {
+                    router.push(`/project-detail/${task.project.id}`)
+                  }}
+                >
+                  <Typography variant='body2' sx={{ textDecoration: 'underline', cursor: 'pointer' }} color={'white'}>
+                    {task.title}
+                  </Typography>
+                </Link>
+              </Grid>
+              <Grid container mt={1}>
+                <Grid
+                  item
+                  md={12}
+                  display={'flex'}
+                  flexDirection={'column'}
+                  alignItems={'center'}
+                  justifyContent={'center'}
+                >
+                  <Typography
+                    textAlign={'center'}
+                    mt={0}
+                    variant='body2'
+                    sx={{
+                      fontWeight: 600,
+                      marginTop: 0,
+                      position: 'absolute',
+                      zIndex: 1
+                    }}
+                  >
+                    {/*                     {Math.ceil(100 * (task.realisasi / task.target)) == 0 */}
+                    {task.realisasi && task.target === 0
+                      ? 0
+                      : task.realisasi == 0
+                      ? 0
+                      : `${Math.ceil(100 * (task.realisasi / task.target))}%`}
+                  </Typography>
+                  <CircularProgress
+                    size={60}
+                    value={
+                      task.realisasi && task.target === 0
+                        ? 0
+                        : task.realisasi == 0
+                        ? 0
+                        : Math.ceil(100 * (task.realisasi / task.target))
+                    }
+                    variant='determinate'
+                    sx={{ marginBottom: 1 }}
+                    color={
+                      Math.ceil(100 * (task.realisasi / task.target)) == 100
+                        ? 'success'
+                        : Math.ceil(100 * (task.realisasi / task.target)) < 50
+                        ? 'error'
+                        : 'warning'
+                    }
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          </>
+        ) : (
+          <>
+            <Grid container>
+              <Grid item md={12} display={'flex'}>
+                <Link
+                  onClick={e => {
+                    router.push(`/rapat-detail/${task.id}`)
+                  }}
+                >
+                  <Typography variant='body2' sx={{ textDecoration: 'underline', cursor: 'pointer' }} color={'white'}>
+                    {task.namaRapat}
+                  </Typography>
+                  <Typography textAlign={'center'} variant='body2' color={'white'}>
+                    {new Date(task.startDate).getHours().toString().padStart(2, '0')}:
+                    {new Date(task.startDate).getMinutes().toString().padStart(2, '0')} -
+                    {new Date(task.duedate).getHours().toString().padStart(2, '0')}:
+                    {new Date(task.duedate).getMinutes().toString().padStart(2, '0')}
+                  </Typography>
+                </Link>
+              </Grid>
+            </Grid>
+          </>
+        )}
       </>
     ),
     startDate: new Date(task.duedate).setHours(7),
@@ -195,20 +282,20 @@ const TimelineViews = props => {
   //   endDate: new Date(2023, 6, 23, 11)
   // }
 
-  console.log(appointments)
-
   return (
     <>
-      <Paper>
-        <Scheduler data={appointments}>
-          <ViewState currentDate={currentDate} onCurrentDateChange={currentDateChange} />
-          <MonthView timeTableCellComponent={TimeTableCell} />
-          <Toolbar />
-          <DateNavigator />
-          <TodayButton />
-          <Appointments />
-        </Scheduler>
-      </Paper>
+      <Grid container>
+        <Paper>
+          <Scheduler data={appointments}>
+            <ViewState currentDate={currentDate} onCurrentDateChange={currentDateChange} />
+            <MonthView timeTableCellComponent={TimeTableCell} />
+            <Toolbar />
+            <DateNavigator />
+            <TodayButton />
+            <Appointments />
+          </Scheduler>
+        </Paper>
+      </Grid>
     </>
   )
 }

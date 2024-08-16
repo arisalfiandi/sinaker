@@ -22,6 +22,16 @@ const ListGroupPerusahaan = ({ data }) => {
   )
 }
 export async function getServerSideProps(context) {
+  const token = await getToken({ req: context.req, secret: process.env.JWT_SECRET })
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/pages/login',
+        permanent: false
+      }
+    }
+  }
   let timkerja
 
   timkerja = await prisma.TimKerja.findMany({

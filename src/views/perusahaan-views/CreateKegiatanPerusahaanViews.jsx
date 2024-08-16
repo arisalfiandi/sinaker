@@ -96,8 +96,8 @@ const CreateKegiatanPerusahaanViews = props => {
 
         if (res.status === 201) {
           Swal.fire({
-            title: 'Create Group Perusahaan Success',
-            text: 'Press OK to continue',
+            title: 'Berhasil dibuat',
+            text: '',
             icon: 'success',
             confirmButtonColor: '#68B92E',
             confirmButtonText: 'OK'
@@ -112,7 +112,7 @@ const CreateKegiatanPerusahaanViews = props => {
       }
     } catch (error) {
       Swal.fire({
-        title: 'Create Group Perusahaan Failed',
+        title: 'Group perusahaan gagal dibuat',
         text: error,
         icon: 'error',
         confirmButtonColor: '#d33',
@@ -134,8 +134,8 @@ const CreateKegiatanPerusahaanViews = props => {
 
         if (res.status === 201) {
           Swal.fire({
-            title: 'Create Group Perusahaan Success',
-            text: 'Press OK to continue',
+            title: 'Buat Group Perusahaan Berhasil',
+            text: '',
             icon: 'success',
             confirmButtonColor: '#68B92E',
             confirmButtonText: 'OK'
@@ -150,7 +150,7 @@ const CreateKegiatanPerusahaanViews = props => {
       }
     } catch (error) {
       Swal.fire({
-        title: 'Create Group Perusahaan Failed',
+        title: 'Group perusahaan gagal dibuat',
         text: error,
         icon: 'error',
         confirmButtonColor: '#d33',
@@ -476,7 +476,7 @@ const CreateKegiatanPerusahaanViews = props => {
 
         if (res.status === 201) {
           Swal.fire({
-            title: 'Create Group Perusahaan Success',
+            title: 'Create Group Perusahaan Berhasil',
             text: 'Press OK to continue',
             icon: 'success',
             confirmButtonColor: '#68B92E',
@@ -492,7 +492,7 @@ const CreateKegiatanPerusahaanViews = props => {
       }
     } catch (error) {
       Swal.fire({
-        title: 'Create Group Perusahaan Failed',
+        title: 'Create Group Perusahaan Gagal',
         text: error,
         icon: 'error',
         confirmButtonColor: '#d33',

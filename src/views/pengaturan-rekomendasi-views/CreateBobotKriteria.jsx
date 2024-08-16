@@ -44,6 +44,8 @@ const CreateKegiatanPerusahaanViews = props => {
     gajiBlnSebelumMitra: 0
   })
 
+  console.log(mitra)
+
   const rowsOBefore = [
     { id: 1, kriteria: 'Jumlah Pekerjaan', prioritas: (pegawai.kriteria1 * 100).toFixed(2) },
     { id: 2, kriteria: 'Jumlah Jam Kerja', prioritas: (pegawai.kriteria2 * 100).toFixed(2) }
@@ -51,8 +53,7 @@ const CreateKegiatanPerusahaanViews = props => {
 
   const rowsMBefore = [
     { id: 1, kriteria: 'Jumlah Pekerjaan', prioritas: (mitra.kriteria1 * 100).toFixed(2) },
-    { id: 2, kriteria: 'Gaji Bulan Ini', prioritas: (mitra.kriteria2 * 100).toFixed(2) },
-    { id: 3, kriteria: 'Gaji Bulan Sebelumnya', prioritas: (mitra.kriteria3 * 100).toFixed(2) }
+    { id: 2, kriteria: 'Honor', prioritas: (mitra.kriteria2 * 100).toFixed(2) }
   ]
 
   const columns = [

@@ -226,7 +226,7 @@ const PeopleDetailGajiViews = props => {
                         <Typography display={'inline'} variant={'body2'}>
                           <Link
                             onClick={async e => {
-                              router.push(`/task-detail/${subKeg.taskId}`)
+                              router.push(`/task-manage-edit/${subKeg.taskId}`)
                             }}
                             sx={{ color: '#777B82', textDecoration: 'underline', cursor: 'pointer' }}
                           >
@@ -344,10 +344,10 @@ const PeopleDetailGajiViews = props => {
                 <Typography variant='body1'>Email</Typography>
                 <Typography variant='caption'>{values.pegawaiEmail}</Typography>
               </Grid>
-              <Grid item md={2} xs={6}>
+              {/* <Grid item md={2} xs={6}>
                 <Typography variant='body1'>Fungsi</Typography>
                 <Typography variant='caption'>{jenisFungsi[values.pegawaiJenisKelamin].bagFungsi}</Typography>
-              </Grid>
+              </Grid> */}
 
               <Grid item md={2} xs={6}>
                 <Typography variant='body1'>Status Bulan Ini</Typography>

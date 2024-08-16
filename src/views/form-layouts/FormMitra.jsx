@@ -78,8 +78,8 @@ const FormMitra = () => {
 
         if (res.status === 201) {
           Swal.fire({
-            title: 'Tambah Mitra Success',
-            text: 'Tekan OK untuk lanjut',
+            title: 'Tambah Mitra Berhasil',
+            text: '',
             icon: 'success',
             confirmButtonColor: '#68B92E',
             confirmButtonText: 'OK'

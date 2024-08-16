@@ -53,7 +53,7 @@ const TableManageTaskList = props => {
         await Swal.fire({
           icon: 'success',
           title: 'Success',
-          text: 'Task Deleted'
+          text: 'Berhasil dihapus'
         })
         router.reload()
       })
@@ -75,7 +75,7 @@ const TableManageTaskList = props => {
       renderCell: params => (
         <Link
           onClick={e => {
-            router.push(`/task-detail/${params.row.id}`)
+            router.push(`/task-manage-edit/${params.row.id}`)
           }}
           sx={{ cursor: 'pointer' }}
         >
@@ -152,13 +152,13 @@ const TableManageTaskList = props => {
           <Button
             onClick={() => {
               Swal.fire({
-                title: 'Hapus Tugas?',
-                text: 'Tekan tombol "Hapus Tugas" untuk menghapus tugas',
+                title: 'Hapus sub kegiatan?',
+                text: '',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Hapus Tugas'
+                confirmButtonText: 'Hapus'
               }).then(result => {
                 if (result.isConfirmed) {
                   handleDelete(params.row.id)

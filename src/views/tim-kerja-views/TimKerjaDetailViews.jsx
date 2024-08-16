@@ -37,6 +37,12 @@ import { DataGrid } from '@mui/x-data-grid'
 import TableGroupPerusahaan from 'src/views/tables/TableGroupPerusahaan'
 import { number } from 'mathjs'
 
+import { useSession } from 'next-auth/react'
+
+// topsis
+import { create, all } from 'mathjs'
+import { getBest } from '../../function/topsis'
+
 const statusObj = {
   0: { color: 'error', status: 'Overload' },
   1: { color: 'success', status: 'Available' }
@@ -52,11 +58,11 @@ const jenisFungsi = {
 
 const CreateKegiatanPerusahaanViews = props => {
   const [timMember, setTimMember] = useState(props.data.timKerjaPegawai)
-
-  const [user, setUser] = useState(props.dataUser)
+  console.log(timMember)
+  const [kriteria, setKriteria] = useState(props.dataKriteria)
 
   const [tpp, setTpp] = useState(props.dataTpp)
-
+  const session = useSession()
   const [values, setValues] = useState({
     idGroup: props.data.id,
     kegFungsi: props.data.fungsi,
@@ -64,58 +70,107 @@ const CreateKegiatanPerusahaanViews = props => {
     kegKetua: props.data.userId_fkey.name
   })
 
+  const kriteria1P = parseFloat(kriteria.kriteria1)
+  const kriteria2P = parseFloat(kriteria.kriteria2)
+  const arrayBebanPegawai = [kriteria1P, kriteria2P]
+
   // console.log(props.data)
 
-  const rows = timMember.map(row => {
-    const gajiBulanIni = tpp
-      .filter(tppRow => tppRow.pmlId === row.userId_fkey.id)
+  const userAll = props.dataUser.map(row => {
+    const jumlahKerjaanTpp = tpp
+      .filter(tppRow => tppRow.pmlId === row.id)
       .filter(tppRow => {
-        const tppDueDate = new Date(tppRow.task.duedate)
+        const tppDueDate = new Date(tppRow.duedate)
         const currentDate = new Date()
         return (
           tppDueDate.getFullYear() === currentDate.getFullYear() && tppDueDate.getMonth() === currentDate.getMonth()
         )
       })
-      .reduce((totalGaji, tppRow) => totalGaji + tppRow.gajiPml, 0)
+      .reduce((count, item) => count + 1, 0)
 
-    const gajiBulanSblm = tpp
+    const jumlahJamKerja = row.pekerjaan_harian
+      .filter(ph => ph.task.jenisKeg === 65)
+      .filter(hari => {
+        const tppDueDate = new Date(hari.tanggalSubmit)
+        const currentDate = new Date()
+        return (
+          tppDueDate.getFullYear() === currentDate.getFullYear() && tppDueDate.getMonth() === currentDate.getMonth()
+        )
+      })
+      .reduce((total, item) => total + item.durasi, 0)
+
+    return {
+      pegawai_id: row.id,
+      jumlahKegiatan: jumlahKerjaanTpp,
+      jumlahJamKerja
+    }
+  })
+
+  const arrayUser = userAll.map(item => [item.jumlahKegiatan, item.jumlahJamKerja])
+  const arrayUserId = userAll.map(item => item.pegawai_id)
+
+  // topsis
+  const config = {}
+  const math = create(all, config)
+
+  // pegawai
+  let m = math.matrix(arrayUser)
+  let w = arrayBebanPegawai
+  let ia = ['min', 'min']
+  let id = arrayUserId
+  let result = getBest(m, w, ia, id)
+
+  const resultBaru = result.map(item => {
+    return { bebanKerja: item.ps }
+  })
+
+  const dataBebanKerja = props.dataUser.map((item, index) => {
+    return {
+      ...item,
+      ...resultBaru[index]
+    }
+  })
+
+  const dataBebanKerjaTimMember = timMember
+    .map(d2 => {
+      const found = dataBebanKerja.find(d1 => d1.id === d2.userId_fkey.id)
+      if (found) {
+        return { ...d2, bebanKerja: found.bebanKerja }
+      }
+      return null
+    })
+    .filter(item => item !== null)
+
+  const rows = dataBebanKerjaTimMember.map(row => {
+    const jumlahKerjaanTpp = tpp
       .filter(tppRow => tppRow.pmlId === row.userId_fkey.id)
       .filter(tppRow => {
-        const tppDueDate = new Date(tppRow.task.duedate)
+        const tppDueDate = new Date(tppRow.duedate)
         const currentDate = new Date()
-        return currentDate.getMonth != 0
-          ? tppDueDate.getFullYear() === currentDate.getFullYear() &&
-              tppDueDate.getMonth() === currentDate.getMonth() - 1
-          : tppDueDate.getFullYear() === currentDate.getFullYear() - 1 && tppDueDate.getMonth() === 12
+        return (
+          tppDueDate.getFullYear() === currentDate.getFullYear() && tppDueDate.getMonth() === currentDate.getMonth()
+        )
       })
-      .reduce((totalGaji, tppRow) => totalGaji + tppRow.gajiPml, 0)
+      .reduce((count, item) => count + 1, 0)
 
-    const gajiBulanDepan = tpp
-      .filter(tppRow => tppRow.pmlId === row.userId_fkey.id)
-      .filter(tppRow => {
-        const tppDueDate = new Date(tppRow.task.duedate)
+    const jumlahJamKerja = row.userId_fkey.pekerjaan_harian
+      .filter(ph => ph.task.jenisKeg === 65)
+      .filter(hari => {
+        const tppDueDate = new Date(hari.tanggalSubmit)
         const currentDate = new Date()
-        return currentDate.getMonth != 11
-          ? tppDueDate.getFullYear() === currentDate.getFullYear() &&
-              tppDueDate.getMonth() === currentDate.getMonth() + 1
-          : tppDueDate.getFullYear() === currentDate.getFullYear() + 1 && tppDueDate.getMonth() === 0
+        return (
+          tppDueDate.getFullYear() === currentDate.getFullYear() && tppDueDate.getMonth() === currentDate.getMonth()
+        )
       })
-      .reduce((totalGaji, tppRow) => totalGaji + tppRow.gajiPml, 0)
-
-    const bebanKerja = row.userId_fkey.beban_kerja_pegawai[0].bebanKerja
-    const nilaiBebanKerja = number(bebanKerja).toFixed(2)
+      .reduce((total, item) => total + item.durasi, 0)
 
     return {
       id: row.userId_fkey.id,
       nama: row.userId_fkey.name,
       fungsi: row.userId_fkey.fungsi,
-      jumlahKegiatan: row.userId_fkey.UserProject.length,
-      // gajiBulanIni,
-      // gajiBulanSblm,
-      // gajiBulanDepan,
-      bebanKerjaO: nilaiBebanKerja,
-      over: gajiBulanIni
-      // checked: row.checked
+      jumlahKegiatan: jumlahKerjaanTpp,
+      jumlahJamKerja: jumlahJamKerja,
+      bebanKerjaO: row.bebanKerja.toFixed(2)
     }
   })
 
@@ -190,31 +245,31 @@ const CreateKegiatanPerusahaanViews = props => {
         </Link>
       )
     },
-    {
-      field: 'over',
-      renderCell: params => (
-        <>
-          <Chip
-            label={statusObj[params.row.jumlahKegiatan < 15 ? 1 : 0].status}
-            color={statusObj[params.row.jumlahKegiatan < 15 ? 1 : 0].color}
-            sx={{
-              height: 24,
-              fontSize: '0.75rem',
-              width: 100,
-              textTransform: 'capitalize',
-              '& .MuiChip-label': { fontWeight: 500 }
-            }}
-          />
-        </>
-      ),
-      renderHeader: () => (
-        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
-          Status Bulan Ini
-        </Typography>
-      ),
-      type: 'string',
-      width: 140
-    },
+    // {
+    //   field: 'over',
+    //   renderCell: params => (
+    //     <>
+    //       <Chip
+    //         label={statusObj[params.row.bebanKerjaO < 0.5 ? (params.row.jumlahKegiatan < 15 ? 1 : 0) : 0].status}
+    //         color={statusObj[params.row.bebanKerjaO < 0.5 ? (params.row.jumlahKegiatan < 15 ? 1 : 0) : 0].color}
+    //         sx={{
+    //           height: 24,
+    //           fontSize: '0.75rem',
+    //           width: 100,
+    //           textTransform: 'capitalize',
+    //           '& .MuiChip-label': { fontWeight: 500 }
+    //         }}
+    //       />
+    //     </>
+    //   ),
+    //   renderHeader: () => (
+    //     <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
+    //       Status Bulan Ini
+    //     </Typography>
+    //   ),
+    //   type: 'string',
+    //   width: 140
+    // },
 
     // {
     //   field: 'gajiBulanIni',
@@ -279,21 +334,21 @@ const CreateKegiatanPerusahaanViews = props => {
     //     </>
     //   )
     // },
-    {
-      field: 'fungsi',
-      headerName: 'Fungsi',
-      renderHeader: () => (
-        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>Fungsi</Typography>
-      ),
+    // {
+    //   field: 'fungsi',
+    //   headerName: 'Fungsi',
+    //   renderHeader: () => (
+    //     <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>Fungsi</Typography>
+    //   ),
 
-      minWidth: 170,
-      renderCell: params => (
-        <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
-          {' '}
-          {jenisFungsi[parseInt(params.row.fungsi)].bagFungsi}
-        </Typography>
-      )
-    },
+    //   minWidth: 170,
+    //   renderCell: params => (
+    //     <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
+    //       {' '}
+    //       {jenisFungsi[parseInt(params.row.fungsi)].bagFungsi}
+    //     </Typography>
+    //   )
+    // },
     // {
     //   field: 'totalGaji',
     //   headerName: 'Total Gaji',
@@ -326,13 +381,23 @@ const CreateKegiatanPerusahaanViews = props => {
     // },
     {
       field: 'jumlahKegiatan',
-      headerName: 'Jumlah Pekerjaan',
+      headerName: 'Jumlah Kegiatan',
       renderHeader: () => (
         <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
-          Jumlah Pekerjaan
+          Jumlah Kegiatan
         </Typography>
       ),
 
+      minWidth: 150
+    },
+    {
+      field: 'jumlahJamKerja',
+      headerName: 'Jam Kerja',
+      renderHeader: () => (
+        <Typography sx={{ fontWeight: 900, fontSize: '0.875rem !important', textAlign: 'center' }}>
+          Jam Kerja
+        </Typography>
+      ),
       minWidth: 150
     },
     {
@@ -414,32 +479,32 @@ const CreateKegiatanPerusahaanViews = props => {
     e.preventDefault()
 
     Swal.fire({
-      title: 'Delete Tim Kerja?',
+      title: 'Hapus Tim Kerja?',
       text: '',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#68B92E',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, Delete Tim Kerja',
-      cancelButtonText: 'No, Cancel',
+      confirmButtonText: 'Hapus',
+      cancelButtonText: 'Batal',
       reverseButtons: true
     }).then(result => {
       if (result.isConfirmed) {
         axios
           .delete(`/tim-kerja/${values.idGroup}`)
           .then(res => {
-            Swal.fire('Deleted', 'Tim kerja has been deleted. ', 'success')
+            Swal.fire('Terhapus', 'Tim kerja berhasil dihapus. ', 'success')
 
             router.push('/tim-kerja-list')
           })
           .catch(err => {
-            Swal.fire('Error', 'Something went wrong. Please try again.', 'error')
+            Swal.fire('Error', 'Perubahan gagal disimpan.', 'error')
           })
       } else if (
         /* Read more about handling dismissals below */
         result.dismiss === Swal.DismissReason.cancel
       ) {
-        Swal.fire('Cancelled!', ' Press "OK" to continue.', 'error')
+        Swal.fire('Dibatalkan!', ' Tekan "OK" untuk melanjutkan.', 'error')
       }
     })
   }
@@ -514,19 +579,39 @@ const CreateKegiatanPerusahaanViews = props => {
         {/* <TableAddParticipant></TableAddParticipant> */}
         <Divider sx={{ margin: 0 }} />
         <Grid item m={4} display={'flex'} justifyContent={'end'}>
-          {/* <Button
-            color={'primary'}
-            sx={{ m: 2 }}
-            size='medium'
-            type='submit'
-            variant='contained'
-            onClick={e => router.push(`/tim-kerja-edit/${id}`)}
-          >
-            Edit Tim Kerja
-          </Button> */}
-          <Button color={'error'} sx={{ m: 2 }} size='medium' type='submit' variant='contained' onClick={handleDelete}>
-            Hapus Tim Kerja
-          </Button>
+          {/* {session.status === 'authenticated' && (session.data.role == 'teamleader' || session.data.role == 'admin') && (
+            <>
+              <Button
+                color={'primary'}
+                sx={{ m: 2 }}
+                size='medium'
+                type='submit'
+                variant='contained'
+                onClick={e => router.push(`/tim-kerja-edit/${id}`)}
+              >
+                Edit Tim Kerja
+              </Button>
+            </>
+          )} */}
+          {session.status === 'authenticated' && (session.data.role == 'teamleader' || session.data.role == 'admin') && (
+            <>
+              <Link onClick={e => router.push(`/tim-kerja-edit/${values.idGroup}`)}>
+                <Button sx={{ m: 2 }} variant='contained' size={'medium'} color={'warning'}>
+                  Ubah Tim Kerja
+                </Button>
+              </Link>
+              <Button
+                color={'error'}
+                sx={{ m: 2 }}
+                size='medium'
+                type='submit'
+                variant='contained'
+                onClick={handleDelete}
+              >
+                Hapus Tim Kerja
+              </Button>
+            </>
+          )}
         </Grid>
       </form>
     </Card>
